@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+  <title id="title">窗外经过</title>
+  <desc id="desc">漫画风格的列车窗边示意画格。</desc>
+  <defs>
+    <pattern id="dots" width="11" height="11" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.3" fill="#142f34" opacity=".26"/>
+    </pattern>
+    <clipPath id="window"><rect x="155" y="62" width="625" height="372" rx="82"/></clipPath>
+  </defs>
+  <rect x="9" y="9" width="882" height="542" fill="#33515a"/>
+  <rect x="9" y="9" width="882" height="542" fill="url(#dots)"/>
+  <g clip-path="url(#window)">
+    <rect x="155" y="62" width="625" height="372" fill="#f5c967"/>
+    <circle cx="629" cy="145" r="54" fill="#e87054" stroke="#19353a" stroke-width="7"/>
+    <path d="M155 239h625v195H155z" fill="#9ec7a8"/>
+    <path d="M155 324c95-74 165-50 238-1 77 51 141-21 227-32 67-9 113 18 160 52v91H155z" fill="#557f70" stroke="#19353a" stroke-width="7"/>
+    <path d="M155 370c90-37 150-8 207 26 94 56 172-12 254-25 55-8 111 7 164 39v24H155z" fill="#407d80"/>
+    <path d="M221 290c29-74 89-78 121-3m152 28c24-83 86-102 128-31m65 25c16-48 46-64 81-49" fill="none" stroke="#244c4d" stroke-width="15" stroke-linecap="round"/>
+    <path d="M291 292v-71m232 86v-99m106 84v-76" stroke="#244c4d" stroke-width="11" stroke-linecap="round"/>
+    <path d="M172 405c138-22 209 30 322 10 83-15 161-28 265 0" fill="none" stroke="#f8e5ac" stroke-width="8" opacity=".8"/>
+  </g>
+  <rect x="133" y="39" width="668" height="418" rx="94" fill="none" stroke="#142f34" stroke-width="33"/>
+  <path d="M198 85h543" stroke="#fff3d4" stroke-width="7" stroke-linecap="round" opacity=".75"/>
+  <path d="M105 468h700" stroke="#1a3439" stroke-width="25" stroke-linecap="round"/>
+  <path d="M148 489h188m56 0h143m52 0h208" stroke="#8aa09a" stroke-width="5" stroke-linecap="round" opacity=".65"/>
+  <path d="M9 9h882v542H9z" fill="none" stroke="#142f34" stroke-width="12"/>
+</svg>

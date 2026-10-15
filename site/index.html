@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7f2">
+    <meta name="description" content="Hu Shuikun 的漫画照片时间线。">
+    <meta property="og:title" content="漫画回忆录 | Hu Shuikun">
+    <meta property="og:description" content="Hu Shuikun 的漫画照片时间线。">
+    <meta property="og:type" content="website">
+    <title>Hu Shuikun</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./data/memories.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="brand-bar">
+      <div class="brand-bar-inner">
+        <a class="brand-lockup" href="#timeline" aria-label="Hu Shuikun 时间线">
+          <span class="brand-monogram" aria-hidden="true">H.</span>
+          <span>HU SHUIKUN</span>
+        </a>
+      </div>
+    </header>
+    <main>
+      <section class="timeline-section" id="timeline" aria-labelledby="timeline-title">
+        <div class="section-heading">
+          <h1 id="timeline-title">时间线</h1>
+        </div>
+
+        <div class="timeline-toolbar">
+          <div class="year-filters" id="year-filters" role="group" aria-label="按年份筛选"></div>
+          <p class="entry-count" id="entry-count" aria-live="polite"></p>
+        </div>
+
+        <div class="timeline-list" id="timeline-list" aria-live="polite">
+        </div>
+      </section>
+    </main>
+
+    <dialog class="memory-dialog" id="memory-dialog" aria-labelledby="dialog-title">
+      <button class="dialog-close" type="button" aria-label="关闭">×</button>
+      <div class="dialog-image-wrap"><img class="dialog-image" src="" alt=""></div>
+      <div class="dialog-details">
+        <p class="dialog-date"></p>
+        <h2 id="dialog-title"></h2>
+        <p class="dialog-location" hidden></p>
+      </div>
+    </dialog>
+  </body>
+</html>
