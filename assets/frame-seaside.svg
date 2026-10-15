@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+  <title id="title">海风来信</title>
+  <desc id="desc">漫画风格的海边傍晚示意画格。</desc>
+  <defs>
+    <pattern id="dots" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.4" fill="#17393b" opacity=".28"/>
+    </pattern>
+    <pattern id="sand" width="15" height="15" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="6" r="1" fill="#8f7153" opacity=".35"/>
+      <circle cx="11" cy="12" r=".8" fill="#8f7153" opacity=".28"/>
+    </pattern>
+    <clipPath id="scene"><rect x="9" y="9" width="882" height="542" rx="3"/></clipPath>
+  </defs>
+  <g clip-path="url(#scene)">
+    <rect x="9" y="9" width="882" height="542" fill="#f1bd68"/>
+    <rect x="9" y="9" width="882" height="244" fill="#f1bd68"/>
+    <rect x="9" y="9" width="882" height="244" fill="url(#dots)" opacity=".52"/>
+    <circle cx="690" cy="124" r="57" fill="#ec7254" stroke="#17393b" stroke-width="7"/>
+    <path d="M9 253h882v161H9z" fill="#4f9b9b" stroke="#17393b" stroke-width="7"/>
+    <path d="M9 312c106-28 164 20 270-1 93-18 147-33 247-2 114 36 216-19 365 2v111H9z" fill="#337c86"/>
+    <path d="M9 339c114-23 190 37 307 6 109-29 195-9 278 12 114 29 189-25 297-8v74H9z" fill="#246775"/>
+    <path d="M9 407c173 8 257 31 406 24 158-8 289-42 476-15v135H9z" fill="#e5bd84" stroke="#17393b" stroke-width="7"/>
+    <path d="M9 407c173 8 257 31 406 24 158-8 289-42 476-15v135H9z" fill="url(#sand)" opacity=".8"/>
+    <path d="M71 281h119M730 302h105M306 283h89" stroke="#fff2ca" stroke-width="7" stroke-linecap="round" opacity=".72"/>
+    <path d="M598 394v93" stroke="#17393b" stroke-width="9" stroke-linecap="round"/>
+    <path d="M548 408c12-51 93-52 107 0z" fill="#e87054" stroke="#17393b" stroke-width="8"/>
+    <path d="M602 407v20" stroke="#f4d16e" stroke-width="7"/>
+    <path d="M583 487c-19 14-26 26-27 43m57-43c17 12 25 25 26 43" fill="none" stroke="#17393b" stroke-width="10" stroke-linecap="round"/>
+    <path d="M530 536h152" stroke="#17393b" stroke-width="7" stroke-linecap="round"/>
+    <path d="M47 181l46-24m-10 61 67-34m559 84 71-35m-4 69 57-24" stroke="#fff2ca" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+    <path d="M264 497c42-12 75-10 113 1m-100 21c28-7 48-5 70 1" fill="none" stroke="#fff8e5" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+    <path d="M9 9h882v542H9z" fill="none" stroke="#17393b" stroke-width="12"/>
+  </g>
+</svg>
