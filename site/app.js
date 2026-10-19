@@ -6,6 +6,7 @@ const dialogImage = dialog.querySelector(".dialog-image");
 const dialogDate = dialog.querySelector(".dialog-date");
 const dialogLocation = dialog.querySelector(".dialog-location");
 const dialogTitle = dialog.querySelector("#dialog-title");
+const dialogText = dialog.querySelector(".dialog-text");
 const memories = Array.isArray(window.MEMORIES) ? window.MEMORIES : [];
 let selectedYear = "all";
 
@@ -32,11 +33,13 @@ const formatDate = (date) => {
 
 function openMemory(memory) {
   dialogImage.src = memory.image;
-  dialogImage.alt = memory.alt || memory.title;
-  dialogDate.textContent = formatDate(memory.date);
+  dialogImage.alt = memory.alt || memory.title || "时间线照片";
+  dialogDate.textContent = [formatDate(memory.date), memory.time].filter(Boolean).join(" ");
   dialogLocation.textContent = memory.location || "";
   dialogLocation.hidden = !memory.location;
-  dialogTitle.textContent = memory.title;
+  dialogTitle.textContent = memory.title || "照片";
+  dialogText.textContent = memory.text || "";
+  dialogText.hidden = !memory.text;
   dialog.showModal();
 }
 
@@ -68,22 +71,29 @@ function createMemory(memory, index) {
   date.append(make("span", "timeline-day", `${month}.${day}`));
   if (memory.time) date.append(make("span", "timeline-time", memory.time));
 
-  const article = make("article", `memory-card${index % 2 ? " is-reversed" : ""}`);
-  const frame = make("button", "memory-frame");
-  frame.type = "button";
-  frame.setAttribute("aria-label", `打开 ${memory.title}`);
-  const image = document.createElement("img");
-  image.src = memory.image;
-  image.alt = memory.alt || memory.title;
-  image.loading = "lazy";
-  frame.append(image);
-  frame.append(make("span", "frame-open", "↗"));
-  frame.addEventListener("click", () => openMemory(memory));
+  const hasImage = Boolean(memory.image);
+  const article = make("article", "memory-card");
+  article.classList.toggle("is-text-only", !hasImage);
+  article.classList.toggle("is-reversed", hasImage && index % 2 === 1);
+  if (hasImage) {
+    const frame = make("button", "memory-frame");
+    frame.type = "button";
+    frame.setAttribute("aria-label", `打开 ${memory.title || "照片"}`);
+    const image = document.createElement("img");
+    image.src = memory.image;
+    image.alt = memory.alt || memory.title || "时间线照片";
+    image.loading = "lazy";
+    frame.append(image);
+    frame.append(make("span", "frame-open", "↗"));
+    frame.addEventListener("click", () => openMemory(memory));
+    article.append(frame);
+  }
 
   const copy = make("div", "memory-copy");
-  copy.append(make("h3", "memory-title", memory.title));
+  if (memory.title) copy.append(make("h3", "memory-title", memory.title));
+  if (memory.text) copy.append(make("p", "memory-text", memory.text));
   if (memory.location) copy.append(make("p", "memory-location", memory.location));
-  article.append(frame, copy);
+  article.append(copy);
   row.append(date, article);
   return row;
 }
@@ -93,7 +103,9 @@ function renderMemories() {
     .filter((memory) => selectedYear === "all" || getDateParts(memory.date).year === selectedYear)
     .sort((a, b) => b.date.localeCompare(a.date));
   list.replaceChildren();
+  list.classList.toggle("is-empty", visible.length === 0);
   visible.forEach((memory, index) => list.append(createMemory(memory, index)));
+  if (visible.length === 0) list.append(make("p", "empty-state", "暂无记录"));
   count.textContent = String(visible.length).padStart(2, "0");
 }
 
