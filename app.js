@@ -8,6 +8,10 @@ const dialogLocation = dialog.querySelector(".dialog-location");
 const dialogTitle = dialog.querySelector("#dialog-title");
 const dialogText = dialog.querySelector(".dialog-text");
 const memories = Array.isArray(window.MEMORIES) ? window.MEMORIES : [];
+const memoirList = document.querySelector("#memoir-list");
+const memoirs = Array.isArray(window.MEMOIRS) ? window.MEMOIRS : [];
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+const panels = tabs.map((tab) => document.getElementById(tab.getAttribute("aria-controls")));
 let selectedYear = "all";
 
 const make = (tag, className, text) => {
@@ -109,6 +113,31 @@ function renderMemories() {
   count.textContent = String(visible.length).padStart(2, "0");
 }
 
+function renderMemoirs() {
+  const visible = [...memoirs].sort((a, b) => b.date.localeCompare(a.date));
+  memoirList.replaceChildren();
+  visible.forEach((memoir) => {
+    const article = make("article", "memoir-entry");
+    const date = make("time", "memoir-date", formatDate(memoir.date));
+    date.dateTime = memoir.date;
+    article.append(date);
+    const body = make("div", "memoir-body");
+    if (memoir.title) body.append(make("h2", "memoir-title", memoir.title));
+    if (memoir.text) body.append(make("p", "memoir-text", memoir.text));
+    article.append(body);
+    memoirList.append(article);
+  });
+}
+
+function selectTab(selectedTab) {
+  tabs.forEach((tab, index) => {
+    const active = tab === selectedTab;
+    tab.setAttribute("aria-selected", String(active));
+    tab.tabIndex = active ? 0 : -1;
+    panels[index].hidden = !active;
+  });
+}
+
 dialog.querySelector(".dialog-close").addEventListener("click", () => dialog.close());
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
@@ -116,3 +145,15 @@ dialog.addEventListener("click", (event) => {
 
 renderFilters();
 renderMemories();
+renderMemoirs();
+tabs.forEach((tab, index) => {
+  tab.addEventListener("click", () => selectTab(tab));
+  tab.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const direction = event.key === "ArrowRight" ? 1 : -1;
+    const next = tabs[(index + direction + tabs.length) % tabs.length];
+    selectTab(next);
+    next.focus();
+  });
+});
