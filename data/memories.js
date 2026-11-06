@@ -9,7 +9,7 @@ window.MEMORIES = [
   },
   {
     date: "2026-10-31",
-    image: "/images/2026-10-31-mini-4wd.jpg",
+    image: "/assets/2026-10-31-mini-4wd.jpg",
     alt: "手里拿着一辆白色的四驱车",
     text: "Home Assistant成功接了小爱，上午周英手机号携转，下午办理电信注销失败，和周英去逛了银盆岭的万达广场和江边，买 10 元彩票中了 20，买了零食很忙的四驱车，拼好后在楼下玩，女儿追着车疯跑。",
   },
