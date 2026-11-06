@@ -139,12 +139,12 @@ figure {
 }
 
 .timeline-section {
-  padding-top: 36px;
+  padding-top: 0;
   padding-bottom: 86px;
 }
 
 .memoirs-section {
-  padding-top: 36px;
+  padding-top: 0;
   padding-bottom: 86px;
 }
 
@@ -153,7 +153,6 @@ figure {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
@@ -550,7 +549,7 @@ figure {
 
   .timeline-section,
   .memoirs-section {
-    padding-top: 34px;
+    padding-top: 0;
     padding-bottom: 56px;
   }
 
