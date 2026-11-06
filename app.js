@@ -88,7 +88,22 @@ function createMemory(memory, index) {
     image.alt = memory.alt || memory.title || "时间线照片";
     image.loading = "lazy";
     frame.append(image);
-    frame.append(make("span", "frame-open", "↗"));
+    const indicator = make("span", "frame-open");
+    indicator.setAttribute("aria-hidden", "true");
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("aria-hidden", "true");
+    icon.setAttribute("focusable", "false");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M7 17 17 7M7 7h10v10");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "currentColor");
+    path.setAttribute("stroke-width", "2");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    icon.append(path);
+    indicator.append(icon);
+    frame.append(indicator);
     frame.addEventListener("click", () => openMemory(memory));
     article.append(frame);
   }
