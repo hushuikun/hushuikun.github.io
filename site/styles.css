@@ -55,6 +55,34 @@ body {
   letter-spacing: 1px;
 }
 
+.section-tabs-wrap {
+  border-bottom: 1px solid var(--line);
+}
+
+.section-tabs {
+  width: min(1240px, calc(100% - 12vw));
+  display: flex;
+  gap: 32px;
+  margin: 0 auto;
+}
+
+.section-tab {
+  min-height: 58px;
+  padding: 0 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.section-tab[aria-selected="true"] {
+  border-bottom-color: var(--coral);
+  color: var(--ink);
+  font-weight: 650;
+}
+
 .brand-monogram {
   width: 31px;
   height: 31px;
@@ -94,6 +122,16 @@ main {
   margin-left: auto;
 }
 
+.memoirs-section {
+  width: min(1240px, calc(100% - 12vw));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
 h2,
 p,
 figure {
@@ -101,20 +139,13 @@ figure {
 }
 
 .timeline-section {
-  padding-top: 56px;
+  padding-top: 36px;
   padding-bottom: 86px;
 }
 
-.section-heading {
-  margin-bottom: 25px;
-}
-
-.section-heading h1 {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: 44px;
-  font-weight: 500;
-  line-height: 1.2;
+.memoirs-section {
+  padding-top: 36px;
+  padding-bottom: 86px;
 }
 
 .timeline-toolbar {
@@ -355,6 +386,46 @@ figure {
   font-size: 13px;
 }
 
+.memoir-list {
+  border-top: 1px solid var(--line);
+}
+
+.memoir-entry {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 32px;
+  padding: 25px 0 27px;
+  border-bottom: 1px solid var(--line);
+}
+
+.memoir-date {
+  padding-top: 4px;
+  color: var(--blue);
+  font-size: 12px;
+}
+
+.memoir-body {
+  min-width: 0;
+}
+
+.memoir-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.memoir-text {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .memory-dialog {
   width: min(860px, calc(100% - 32px));
   max-width: none;
@@ -430,7 +501,12 @@ figure {
     width: min(100% - 48px, 720px);
   }
 
-  .timeline-section {
+  .section-tabs {
+    width: min(100% - 48px, 720px);
+  }
+
+  .timeline-section,
+  .memoirs-section {
     width: min(100% - 48px, 720px);
   }
 
@@ -444,13 +520,19 @@ figure {
 }
 
 @media (max-width: 620px) {
-  .timeline-section {
+  .timeline-section,
+  .memoirs-section {
     width: calc(100% - 40px);
   }
 
   .brand-bar-inner {
     width: calc(100% - 40px);
     min-height: 60px;
+  }
+
+  .section-tabs {
+    width: calc(100% - 40px);
+    gap: 24px;
   }
 
   .brand-bar {
@@ -462,13 +544,16 @@ figure {
     height: 28px;
   }
 
-  .timeline-section {
+  .timeline-section,
+  .memoirs-section {
     padding-top: 34px;
     padding-bottom: 56px;
   }
 
-  .section-heading h1 {
-    font-size: 36px;
+  .section-tab {
+    min-height: 52px;
+    padding: 0 7px;
+    font-size: 15px;
   }
 
   .timeline-toolbar {
@@ -555,6 +640,20 @@ figure {
 
   .memory-title {
     font-size: 20px;
+  }
+
+  .memoir-entry {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 19px 0 21px;
+  }
+
+  .memoir-date {
+    font-size: 10px;
+  }
+
+  .memoir-title {
+    font-size: 19px;
   }
 
   .dialog-image-wrap {
