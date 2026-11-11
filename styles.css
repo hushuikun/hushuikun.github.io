@@ -128,6 +128,21 @@ main {
   margin-left: auto;
 }
 
+.game-section {
+  width: min(1240px, calc(100% - 12vw));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.game-frame {
+  width: 100%;
+  height: calc(100dvh - 127px);
+  min-height: 500px;
+  display: block;
+  border: 0;
+  background: #050a14;
+}
+
 .tab-panel[hidden] {
   display: none;
 }
@@ -509,7 +524,8 @@ figure {
   }
 
   .timeline-section,
-  .memoirs-section {
+  .memoirs-section,
+  .game-section {
     width: min(100% - 48px, 720px);
   }
 
@@ -524,7 +540,8 @@ figure {
 
 @media (max-width: 620px) {
   .timeline-section,
-  .memoirs-section {
+  .memoirs-section,
+  .game-section {
     width: calc(100% - 40px);
   }
 
@@ -548,7 +565,8 @@ figure {
   }
 
   .timeline-section,
-  .memoirs-section {
+  .memoirs-section,
+  .game-section {
     padding-top: 0;
     padding-bottom: 56px;
   }
@@ -557,6 +575,11 @@ figure {
     min-height: 52px;
     padding: 0 7px;
     font-size: 15px;
+  }
+
+  .game-frame {
+    height: calc(100dvh - 113px);
+    min-height: 480px;
   }
 
   .timeline-toolbar {
