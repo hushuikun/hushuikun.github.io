@@ -82,6 +82,8 @@ const allTags = () => {
 };
 
 function openMemory(memory) {
+  const active = document.activeElement;
+  dialogTrigger = active instanceof HTMLElement && active !== document.body ? active : null;
   if (memory.image) {
     dialogImage.src = memory.image;
     dialogImage.alt = memory.alt || memory.title || "时间线照片";
@@ -621,6 +623,21 @@ function selectTab(selectedTab, updateHash = true) {
 dialog.querySelector(".dialog-close").addEventListener("click", () => dialog.close());
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
+});
+
+// 关闭弹窗后不要让焦点落在整块时间线上（会出现浏览器默认的蓝色焦点框）
+let dialogTrigger = null;
+let pointerMode = false;
+document.addEventListener("pointerdown", () => { pointerMode = true; }, true);
+document.addEventListener("keydown", () => { pointerMode = false; }, true);
+dialog.addEventListener("close", () => {
+  if (!pointerMode && dialogTrigger && document.contains(dialogTrigger)) {
+    dialogTrigger.focus({ preventScroll: true });
+  } else {
+    const active = document.activeElement;
+    if (active && active !== document.body) active.blur();
+  }
+  dialogTrigger = null;
 });
 
 searchInput.addEventListener("input", () => {

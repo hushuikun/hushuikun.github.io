@@ -112,6 +112,12 @@ a:focus-visible {
   outline-offset: 4px;
 }
 
+/* 内容面板本身可获得焦点，但不要整块画焦点框 */
+.tab-panel:focus,
+.tab-panel:focus-visible {
+  outline: none;
+}
+
 main {
   overflow: hidden;
 }
