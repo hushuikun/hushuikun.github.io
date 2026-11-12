@@ -422,6 +422,10 @@ figure {
   font-size: 12px;
 }
 
+.memoir-entry.is-plain {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .memoir-body {
   min-width: 0;
 }
@@ -672,6 +676,15 @@ figure {
     grid-template-columns: 1fr;
     gap: 6px;
     padding: 19px 0 21px;
+  }
+
+  .memoir-entry.is-indexed {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .memoir-index {
+    font-size: 14px;
   }
 
   .memoir-date {

@@ -72,7 +72,13 @@ const allTags = () => {
   memories.forEach((memory) => {
     tagsOf(memory).forEach((tag) => counts.set(tag, (counts.get(tag) || 0) + 1));
   });
-  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh"));
+  const pinnedLast = new Set(["游戏"]);
+  return [...counts.entries()].sort((a, b) => {
+    const pa = pinnedLast.has(a[0]) ? 1 : 0;
+    const pb = pinnedLast.has(b[0]) ? 1 : 0;
+    if (pa !== pb) return pa - pb;
+    return b[1] - a[1] || a[0].localeCompare(b[0], "zh");
+  });
 };
 
 function openMemory(memory) {
@@ -339,13 +345,20 @@ function renderMemories() {
 /* ---------------------------------------------------------------- memoirs */
 
 function renderMemoirs() {
-  const visible = [...memoirs].sort((a, b) => b.date.localeCompare(a.date));
+  const visible = [...memoirs].sort((a, b) => {
+    if (a.date && b.date) return b.date.localeCompare(a.date);
+    return (b.order || 0) - (a.order || 0);
+  });
   memoirList.replaceChildren();
   visible.forEach((memoir) => {
     const article = make("article", "memoir-entry");
-    const date = make("time", "memoir-date", formatDate(memoir.date));
-    date.dateTime = memoir.date;
-    article.append(date);
+    if (memoir.date) {
+      const date = make("time", "memoir-date", formatDate(memoir.date));
+      date.dateTime = memoir.date;
+      article.append(date);
+    } else {
+      article.classList.add("is-plain");
+    }
     const body = make("div", "memoir-body");
     if (memoir.title) body.append(make("h2", "memoir-title", memoir.title));
     if (memoir.text) body.append(make("p", "memoir-text", memoir.text));
