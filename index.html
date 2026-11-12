@@ -27,11 +27,36 @@
       <div class="section-tabs" role="tablist">
         <button class="section-tab" id="timeline-tab" type="button" role="tab" aria-selected="true" aria-controls="timeline-panel">时间线</button>
         <button class="section-tab" id="memoirs-tab" type="button" role="tab" aria-selected="false" aria-controls="memoirs-panel" tabindex="-1">回忆录</button>
+        <button class="section-tab" id="stats-tab" type="button" role="tab" aria-selected="false" aria-controls="stats-panel" tabindex="-1">足迹</button>
         <button class="section-tab" id="game-tab" type="button" role="tab" aria-selected="false" aria-controls="game-panel" tabindex="-1">游戏</button>
       </div>
     </nav>
     <main>
       <section class="timeline-section tab-panel" id="timeline-panel" role="tabpanel" aria-labelledby="timeline-tab" tabindex="0">
+        <div class="spotlight" id="spotlight" hidden>
+          <div class="spotlight-head">
+            <span class="spotlight-kicker" id="spotlight-kicker"></span>
+            <button class="spotlight-shuffle" id="spotlight-shuffle" type="button">换一条</button>
+          </div>
+          <button class="spotlight-card" id="spotlight-card" type="button">
+            <span class="spotlight-date" id="spotlight-date"></span>
+            <span class="spotlight-text" id="spotlight-text"></span>
+            <span class="spotlight-more">翻开 →</span>
+          </button>
+        </div>
+
+        <div class="timeline-tools">
+          <label class="search-box" for="search-input">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+              <path d="m16.5 16.5 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+            </svg>
+            <input id="search-input" type="search" placeholder="搜索记录、关键词…" autocomplete="off" enterkeyhint="search">
+            <button class="search-clear" id="search-clear" type="button" aria-label="清除搜索" hidden>×</button>
+          </label>
+          <div class="tag-filters" id="tag-filters" role="group" aria-label="按标签筛选"></div>
+        </div>
+
         <div class="timeline-toolbar">
           <div class="year-filters" id="year-filters" role="group" aria-label="按年份筛选"></div>
           <p class="entry-count" id="entry-count" aria-live="polite"></p>
@@ -45,6 +70,36 @@
       </section>
       <section class="game-section tab-panel" id="game-panel" aria-labelledby="game-tab" role="tabpanel" tabindex="0" hidden>
         <iframe class="game-frame" src="./games/neon-crates.html" title="Neon Crates - 第一人称推箱子游戏" allow="fullscreen"></iframe>
+      </section>
+      <section class="stats-section tab-panel" id="stats-panel" aria-labelledby="stats-tab" role="tabpanel" tabindex="0" hidden>
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <div class="heatmap-block">
+          <div class="stats-head">
+            <h2 class="stats-title">写作热力图</h2>
+            <div class="stats-years" id="heatmap-years" role="group" aria-label="选择年份"></div>
+          </div>
+          <div class="heatmap-scroll">
+            <div class="heatmap-months" id="heatmap-months" aria-hidden="true"></div>
+            <div class="heatmap-grid" id="heatmap-grid"></div>
+          </div>
+          <div class="heatmap-legend">
+            <span>少</span>
+            <i class="heat-cell lvl-0"></i><i class="heat-cell lvl-1"></i><i class="heat-cell lvl-2"></i><i class="heat-cell lvl-3"></i><i class="heat-cell lvl-4"></i>
+            <span>多</span>
+          </div>
+        </div>
+
+        <div class="stats-columns">
+          <div class="stats-card">
+            <h2 class="stats-title">每月记录字数</h2>
+            <div class="month-bars" id="month-bars"></div>
+          </div>
+          <div class="stats-card">
+            <h2 class="stats-title">最常出现的词</h2>
+            <div class="word-cloud" id="word-cloud"></div>
+          </div>
+        </div>
       </section>
     </main>
 
