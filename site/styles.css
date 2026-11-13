@@ -1183,6 +1183,40 @@ figure {
   font-family: var(--sans);
 }
 
+.visit-strip {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 14px;
+  padding: 15px 20px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.visit-label {
+  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.visit-item b {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.visit-note {
+  margin-left: auto;
+  color: #9aa79f;
+  font-size: 10px;
+}
+
 @media (max-width: 900px) {
   .stats-section {
     width: min(100% - 48px, 720px);

@@ -703,3 +703,16 @@ tabs.forEach((tab, index) => {
     next.focus();
   });
 });
+
+// 访问统计脚本被拦截时，隐藏整个统计条，避免一直显示占位符
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    const pv = document.getElementById("busuanzi_container_site_pv");
+    const uv = document.getElementById("busuanzi_container_site_uv");
+    const loaded = (pv && pv.style.display !== "none") || (uv && uv.style.display !== "none");
+    if (!loaded) {
+      const strip = document.querySelector(".visit-strip");
+      if (strip) strip.hidden = true;
+    }
+  }, 6000);
+});
