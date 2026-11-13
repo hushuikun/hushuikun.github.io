@@ -27,7 +27,7 @@
     <nav class="section-tabs-wrap" aria-label="内容分类">
       <div class="section-tabs" role="tablist">
         <button class="section-tab" id="timeline-tab" type="button" role="tab" aria-selected="true" aria-controls="timeline-panel">时间线</button>
-        <button class="section-tab" id="memoirs-tab" type="button" role="tab" aria-selected="false" aria-controls="memoirs-panel" tabindex="-1">回忆录</button>
+        <button class="section-tab" id="memoirs-tab" type="button" role="tab" aria-selected="false" aria-controls="memoirs-panel" tabindex="-1">记忆库</button>
         <button class="section-tab" id="stats-tab" type="button" role="tab" aria-selected="false" aria-controls="stats-panel" tabindex="-1">足迹</button>
         <button class="section-tab" id="game-tab" type="button" role="tab" aria-selected="false" aria-controls="game-panel" tabindex="-1">游戏</button>
       </div>
@@ -67,6 +67,7 @@
         </div>
       </section>
       <section class="memoirs-section tab-panel" id="memoirs-panel" aria-labelledby="memoirs-tab" role="tabpanel" tabindex="0" hidden>
+        <div class="lib-tabs" id="lib-tabs" role="group" aria-label="按类型筛选"></div>
         <div class="memoir-list" id="memoir-list" aria-live="polite"></div>
       </section>
       <section class="game-section tab-panel" id="game-panel" aria-labelledby="game-tab" role="tabpanel" tabindex="0" hidden>

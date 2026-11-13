@@ -1293,3 +1293,97 @@ figure {
     height: 110px;
   }
 }
+
+/* ============================================================ 记忆库 */
+.lib-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 18px 0 6px;
+}
+
+.lib-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+
+.lib-tab:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.lib-tab[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+
+.lib-count {
+  font-size: 9px;
+  opacity: 0.55;
+}
+
+.lib-entry {
+  grid-template-columns: 68px minmax(0, 1fr);
+}
+
+.lib-entry.is-plain {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lib-year {
+  padding-top: 2px;
+  color: var(--blue);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.lib-kind {
+  display: inline-block;
+  margin-bottom: 7px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.lib-kind-music { color: #b8533d; background: rgb(232 112 84 / 12%); }
+.lib-kind-film { color: #45707f; background: rgb(85 127 145 / 12%); }
+.lib-kind-game { color: #3f7f68; background: rgb(111 183 155 / 16%); }
+
+.lib-title {
+  margin: 0;
+}
+
+.lib-sub {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.lib-note {
+  margin-top: 10px;
+}
+
+@media (max-width: 620px) {
+  .lib-entry,
+  .lib-entry.is-plain {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .lib-tabs {
+    padding-top: 14px;
+  }
+}

@@ -30,6 +30,7 @@ const state = {
   tag: "all",
   query: "",
   spotlightDate: null,
+  lib: "memory",
 };
 
 const make = (tag, className, text) => {
@@ -346,27 +347,80 @@ function renderMemories() {
 
 /* ---------------------------------------------------------------- memoirs */
 
+const LIB_KINDS = [
+  { key: "memory", label: "记忆" },
+  { key: "music", label: "音乐" },
+  { key: "film", label: "影视" },
+  { key: "game", label: "游戏" },
+];
+
+const libTabs = document.querySelector("#lib-tabs");
+const kindOf = (item) => item.kind || "memory";
+const libCount = (kind) => memoirs.filter((item) => kindOf(item) === kind).length;
+
+function libYear(item) {
+  if (item.year) return String(item.year);
+  if (item.date) return item.date.slice(0, 4);
+  return "";
+}
+
+function renderLibTabs() {
+  libTabs.replaceChildren();
+  LIB_KINDS.forEach(({ key, label }) => {
+    const button = make("button", "lib-tab", label);
+    button.type = "button";
+    button.dataset.kind = key;
+    button.setAttribute("aria-pressed", String(state.lib === key));
+    button.append(make("span", "lib-count", String(libCount(key))));
+    button.addEventListener("click", () => {
+      state.lib = key;
+      renderLibTabs();
+      renderMemoirs();
+    });
+    libTabs.append(button);
+  });
+}
+
+function createLibEntry(item, kind) {
+  const article = make("article", "memoir-entry lib-entry lib-" + kind);
+  const year = kind === "memory" ? "" : libYear(item);
+  if (year) {
+    article.append(make("span", "lib-year", year));
+  } else {
+    article.classList.add("is-plain");
+  }
+
+  const body = make("div", "memoir-body");
+  if (kind === "memory") {
+    if (item.text) body.append(make("p", "memoir-text", item.text));
+  } else {
+    const label = LIB_KINDS.find((k) => k.key === kind).label;
+    body.append(make("span", "lib-kind lib-kind-" + kind, label));
+    if (item.title) body.append(make("h2", "memoir-title lib-title", item.title));
+    const sub = item.creator || "";
+    if (sub) body.append(make("p", "lib-sub", sub));
+    if (item.note) body.append(make("p", "memoir-text lib-note", item.note));
+  }
+  article.append(body);
+  return article;
+}
+
 function renderMemoirs() {
-  const visible = [...memoirs].sort((a, b) => {
-    if (a.date && b.date) return b.date.localeCompare(a.date);
-    return (b.order || 0) - (a.order || 0);
-  });
+  const kind = state.lib;
+  const visible = memoirs
+    .filter((item) => kindOf(item) === kind)
+    .sort((a, b) => {
+      if (kind === "memory") return (b.order || 0) - (a.order || 0);
+      const av = a.date || libYear(a);
+      const bv = b.date || libYear(b);
+      return String(bv).localeCompare(String(av));
+    });
   memoirList.replaceChildren();
-  visible.forEach((memoir) => {
-    const article = make("article", "memoir-entry");
-    if (memoir.date) {
-      const date = make("time", "memoir-date", formatDate(memoir.date));
-      date.dateTime = memoir.date;
-      article.append(date);
-    } else {
-      article.classList.add("is-plain");
-    }
-    const body = make("div", "memoir-body");
-    if (memoir.title) body.append(make("h2", "memoir-title", memoir.title));
-    if (memoir.text) body.append(make("p", "memoir-text", memoir.text));
-    article.append(body);
-    memoirList.append(article);
-  });
+  if (!visible.length) {
+    memoirList.append(make("p", "empty-state", "还没有记录"));
+    return;
+  }
+  visible.forEach((item) => memoirList.append(createLibEntry(item, kind)));
 }
 
 /* ---------------------------------------------------------------- stats */
@@ -678,10 +732,13 @@ document.addEventListener("keydown", (event) => {
 
 spotlightShuffle.addEventListener("click", () => renderSpotlight(true));
 
+const libParam = new URLSearchParams(location.search).get("lib");
+if (libParam && LIB_KINDS.some((k) => k.key === libParam)) state.lib = libParam;
 renderFilters();
 renderTagFilters();
 renderSpotlight();
 renderMemories();
+renderLibTabs();
 renderMemoirs();
 
 (() => {
