@@ -109,12 +109,21 @@ const scene=new THREE.Scene();
 (()=>{const c=document.createElement('canvas');c.width=2;c.height=256;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,256);
  gr.addColorStop(0,'#8f9be0');gr.addColorStop(.55,'#e9b8d0');gr.addColorStop(1,'#fbd9b8');g.fillStyle=gr;g.fillRect(0,0,2,256);scene.background=new THREE.CanvasTexture(c)})();
 scene.fog=new THREE.Fog(0xedc3cf,2.5,14);
-const cam=new THREE.PerspectiveCamera(78,1,0.05,40);
+const cam=new THREE.PerspectiveCamera(78,1,0.05,140);
 scene.add(cam);
 scene.add(new THREE.HemisphereLight(0xfff1ea,0xb89bd0,.75));
 const sun=new THREE.DirectionalLight(0xffe6c7,.45);sun.position.set(-6,10,3);scene.add(sun);
 const torch=new THREE.PointLight(0xfff0e0,.25,12,1.2);
 cam.add(torch);
+// floating pastel towers in the sky (unaffected by fog)
+const sky=new THREE.Group();scene.add(sky);
+{const pal=[0xf4a99a,0x9fd6d0,0xf7d58c,0xb9a6e8,0xf2b6cf],mt=c=>new THREE.MeshLambertMaterial({color:c,fog:false});
+ for(let i=0;i<10;i++){
+  const a=i/10*Math.PI*2+.3,r=46+(i%3)*9,h=4+(i%4)*2.2,g=new THREE.Group();
+  const b=new THREE.Mesh(new THREE.BoxGeometry(3,h,3),mt(pal[i%5]));b.position.y=h/2;g.add(b);
+  const rf=new THREE.Mesh(new THREE.ConeGeometry(2.4,2.8,4),mt(pal[(i+2)%5]));rf.rotation.y=Math.PI/4;rf.position.y=h+1.4;g.add(rf);
+  g.position.set(4.5+Math.cos(a)*r,7+(i%3)*4,3+Math.sin(a)*r);g.userData.y0=g.position.y;sky.add(g);
+ }}
 const ren=new THREE.WebGLRenderer({antialias:true});
 ren.setPixelRatio(Math.min(devicePixelRatio||1,2));
 document.body.prepend(ren.domElement);
@@ -123,9 +132,9 @@ addEventListener('resize',resize);resize();
 
 function mk(fn){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');fn(g);
  const t=new THREE.CanvasTexture(c);t.magFilter=THREE.NearestFilter;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
-const brick=mk(g=>{g.fillStyle='#e98b78';g.fillRect(0,0,64,64);g.fillStyle='#f2a592';g.fillRect(0,0,64,6);g.fillStyle='#d8725f';g.fillRect(0,58,64,6);
- g.fillStyle='#f7c1ae';g.beginPath();g.moveTo(32,14);g.lineTo(50,32);g.lineTo(32,50);g.lineTo(14,32);g.closePath();g.fill();
- g.fillStyle='#e98b78';g.beginPath();g.moveTo(32,23);g.lineTo(41,32);g.lineTo(32,41);g.lineTo(23,32);g.closePath();g.fill()});
+const brick=mk(g=>{g.fillStyle='#e98b78';g.fillRect(0,0,64,64);g.fillStyle='#f2a592';g.fillRect(0,0,64,5);g.fillStyle='#d8725f';g.fillRect(0,59,64,5);
+ const arch=(x0,x1,yb,yt,c)=>{g.fillStyle=c;g.beginPath();g.moveTo(x0,yb);g.lineTo(x0,yt+(x1-x0)/2);g.arc((x0+x1)/2,yt+(x1-x0)/2,(x1-x0)/2,Math.PI,0);g.lineTo(x1,yb);g.closePath();g.fill()};
+ arch(18,46,58,14,'#f7c1ae');arch(23,41,58,20,'#c9604f')});
 const stone=mk(g=>{g.fillStyle='#f6e6cc';g.fillRect(0,0,64,64);g.fillStyle='#efd9b8';g.fillRect(0,0,32,32);g.fillRect(32,32,32,32);
  g.strokeStyle='#e2c79e';g.lineWidth=1;g.strokeRect(.5,.5,63,63)});
 const crate=mk(g=>{g.fillStyle='#4fb0ae';g.fillRect(0,0,64,64);g.fillStyle='#6fc8c2';g.fillRect(6,6,52,52);
@@ -134,6 +143,8 @@ const crateOn=mk(g=>{g.fillStyle='#e9a93c';g.fillRect(0,0,64,64);g.fillStyle='#f
  g.fillStyle='#e9a93c';g.fillRect(14,14,36,36);g.fillStyle='#fff3cf';g.fillRect(27,27,10,10)});
 const mWall=new THREE.MeshLambertMaterial({map:brick});
 const mFloor=new THREE.MeshLambertMaterial({map:stone});
+const mTrim=new THREE.MeshLambertMaterial({color:0xfbe3d0});
+brick.repeat.set(1,1.8);
 const mBox=new THREE.MeshLambertMaterial({map:crate});
 const mBoxOn=new THREE.MeshLambertMaterial({map:crateOn});
 const gMark=new THREE.MeshBasicMaterial({color:0xf2b84b});
@@ -159,9 +170,9 @@ function load(i){
  // flood fill walkable interior so nothing is drawn outside the walls
  const st=[[px,py]];
  while(st.length){const[x,y]=st.pop();if(!walls[y]||walls[y][x]!==false||floor[y][x])continue;floor[y][x]=true;D.forEach(d=>st.push([x+d[0],y+d[1]]));const pt=portal.get(y*W+x);if(pt!==undefined)st.push([pt%W,(pt/W)|0])}
- const pl=new THREE.PlaneGeometry(1,1),bx=new THREE.BoxGeometry(1,1,1);
+ const pl=new THREE.PlaneGeometry(1,1),bx=new THREE.BoxGeometry(1,1.8,1),tg=new THREE.BoxGeometry(1.08,.1,1.08);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-  if(walls[y][x]){const w=new THREE.Mesh(bx,mWall);w.position.set(x,.5,y);group.add(w)}
+  if(walls[y][x]){const w=new THREE.Mesh(bx,mWall);w.position.set(x,.9,y);group.add(w);const t=new THREE.Mesh(tg,mTrim);t.position.set(x,1.83,y);group.add(t)}
   else if(floor[y][x]){
    const f=new THREE.Mesh(pl,mFloor);f.rotation.x=-Math.PI/2;f.position.set(x,0,y);group.add(f);
    
@@ -376,6 +387,7 @@ function frame(now){
   q.m.position.x+=q.vx*dt;q.m.position.y=Math.max(.02,q.m.position.y+q.vy*dt);q.m.position.z+=q.vz*dt;
   q.m.material.opacity=Math.max(0,1-q.t/.9);
   if(q.t>.9){scene.remove(q.m);q.m.material.dispose();parts.splice(i,1)}}
+ sky.children.forEach((g,i)=>{g.position.y=g.userData.y0+Math.sin(now/1700+i)*.7});
  spin.forEach(m=>m.scale.setScalar(1+.12*Math.sin(now/300)));
  gBeam.opacity=.2+.1*Math.sin(now/380);
  ren.render(scene,cam);
