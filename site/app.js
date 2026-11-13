@@ -359,8 +359,13 @@ const kindOf = (item) => item.kind || "memory";
 const libCount = (kind) => memoirs.filter((item) => kindOf(item) === kind).length;
 
 function libYear(item) {
+  const raw = item.year ? String(item.year) : item.date ? item.date.slice(0, 7) : "";
+  return raw.replace("-", ".");
+}
+
+function libSortKey(item) {
+  if (item.date) return item.date;
   if (item.year) return String(item.year);
-  if (item.date) return item.date.slice(0, 4);
   return "";
 }
 
@@ -411,9 +416,7 @@ function renderMemoirs() {
     .filter((item) => kindOf(item) === kind)
     .sort((a, b) => {
       if (kind === "memory") return (b.order || 0) - (a.order || 0);
-      const av = a.date || libYear(a);
-      const bv = b.date || libYear(b);
-      return String(bv).localeCompare(String(av));
+      return libSortKey(b).localeCompare(libSortKey(a));
     });
   memoirList.replaceChildren();
   if (!visible.length) {
