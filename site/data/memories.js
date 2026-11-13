@@ -1,5 +1,12 @@
 window.MEMORIES = [
   {
+    date: "2026-11-12",
+    tags: ["女儿", "生活", "心情"],
+    image: "/assets/2026-11-12-happiness-tree.webp",
+    alt: "被女儿撸掉一大片叶子的幸福树",
+    text: "晚上到家发现家里的幸福树被女儿撸掉了一大片叶子(｀Д´)。",
+  },
+  {
     date: "2026-11-11",
     tags: ["女儿", "生活"],
     image: "/assets/2026-11-11-excavator.webp",
