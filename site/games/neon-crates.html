@@ -3,47 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Neon Crates – First-Person Sokoban</title>
-<meta name="theme-color" content="#050a14">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Rajdhani:wght@500;700&display=swap">
+<title>推箱子 · 第一人称</title>
+<meta name="theme-color" content="#f6f7f2">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---ink:#d8f6ff;--glass:rgba(6,16,28,.72);--amber:#2ef2ff;--line:rgba(46,242,255,.32)}
+--paper:#f6f7f2;--white:#fffefa;--ink:#182a2b;--muted:#617071;--line:#d9dfd8;--coral:#e87054;--mint:#b8dbce;--blue:#557f91;--yellow:#f1c765;
+--serif:"Songti SC","Noto Serif CJK SC","SimSun",serif;--sans:"Avenir Next",Avenir,"PingFang SC","Microsoft YaHei",sans-serif}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-html,body{height:100%;margin:0;background:#050a14;overflow:hidden;color:var(--ink);font-family:"Rajdhani","Segoe UI",ui-monospace,Menlo,Consolas,sans-serif;font-weight:500;-webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html,body{height:100%;margin:0;background:radial-gradient(circle at 50% 18%,#fdf7ee 0%,#f7eadc 58%,#efdccb 100%);overflow:hidden;color:var(--ink);font-family:var(--sans);font-weight:500;-webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 canvas{position:fixed;inset:0;display:block;touch-action:none}
-.glass{background:var(--glass);border:1px solid var(--line);border-radius:3px;backdrop-filter:blur(4px);box-shadow:0 0 14px rgba(46,242,255,.14),inset 0 0 12px rgba(46,242,255,.08)}
-#fx{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 52%,rgba(0,8,22,.7))}
-#hud{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;justify-content:space-between;gap:8px;pointer-events:none;font-size:15px}
-#hud>div{padding:8px 12px}
-#cmp{min-width:2ch;text-align:center;font-weight:bold;color:var(--amber)}
-#bar{position:fixed;left:12px;top:calc(env(safe-area-inset-top,0px) + 58px);display:flex;gap:6px}
-button{font:inherit;font-weight:700;letter-spacing:.05em;color:var(--ink);background:var(--glass);border:1px solid var(--line);border-radius:3px;padding:7px 12px;cursor:pointer;box-shadow:0 0 10px rgba(46,242,255,.12)}
-button:hover{border-color:var(--amber)}
-button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+#fx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 58%,rgba(24,42,43,.07) 100%)}
+#hud{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;justify-content:space-between;gap:8px;pointer-events:none;font-size:14px}
+#hud>div{padding:7px 12px}
+#cmp{min-width:2ch;text-align:center;font-family:var(--serif);font-size:16px;color:var(--coral)}
+.glass{background:rgba(255,254,250,.92);border:1px solid var(--line);border-radius:3px;box-shadow:0 2px 12px rgba(24,42,43,.07)}
+#lv{font-family:var(--serif);font-size:14px;letter-spacing:.04em}
+#st{color:var(--muted);font-size:13px}
+#bar{position:fixed;left:12px;top:calc(env(safe-area-inset-top,0px) + 56px);display:flex;gap:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--white);border:1px solid var(--line);border-radius:3px;padding:7px 12px;cursor:pointer;transition:border-color .15s,color .15s,background-color .15s}
+button:hover{border-color:var(--coral);color:var(--coral)}
+button:focus-visible{outline:2px solid var(--coral);outline-offset:2px}
 #pad{--s:clamp(54px,17vw,72px);position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:grid;grid-template-columns:repeat(3,var(--s));grid-template-rows:repeat(2,var(--s));gap:8px}
-#pad button{font-size:24px;padding:0;border-radius:14px;touch-action:none;background:rgba(14,11,16,.6)}
-#pad button:active{background:rgba(46,242,255,.3);border-color:var(--amber);box-shadow:0 0 18px rgba(46,242,255,.6)}
+#pad button{font-size:22px;padding:0;border-radius:14px;touch-action:none;background:rgba(255,254,250,.9);color:var(--ink);box-shadow:0 2px 10px rgba(24,42,43,.06)}
+#pad button:active{background:var(--mint);border-color:var(--blue);color:var(--ink);box-shadow:none}
 #bar button{min-height:40px}
-#hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);padding:8px 14px;font-size:14px;text-align:center;opacity:0;transition:opacity .4s;pointer-events:none;width:max-content;max-width:80vw}
+#hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);padding:9px 15px;font-size:13px;line-height:1.6;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none;width:max-content;max-width:80vw;background:var(--ink);color:var(--white);border:0;border-radius:3px;box-shadow:0 6px 20px rgba(24,42,43,.18)}
 #hint.on{opacity:1}
-#sel{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,8,18,.72)}
+#sel{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(24,42,43,.32)}
 #sel.on{display:flex}
-#sel>div{padding:20px;text-align:center;width:min(88vw,380px)}
-#sel h2{margin:0;font-family:"Orbitron","Rajdhani",ui-monospace,monospace;font-size:18px;letter-spacing:.06em;color:var(--amber)}
-#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
-#grid button{height:64px;padding:2px;line-height:1.2;font-size:15px}
+#sel>div{padding:22px;text-align:center;width:min(88vw,380px)}
+#sel h2{margin:0;font-family:var(--serif);font-weight:500;font-size:18px;letter-spacing:.06em;color:var(--ink)}
+#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}
+#grid button{height:64px;padding:2px;line-height:1.35;font-size:14px;color:var(--muted)}
+#grid button:hover:not(:disabled){color:var(--coral)}
 #grid button:disabled{opacity:.35;cursor:not-allowed}
 #pad .f{grid-column:2;grid-row:1}#pad .l{grid-column:1;grid-row:2}#pad .b{grid-column:2;grid-row:2}#pad .r{grid-column:3;grid-row:2}
-#help{position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);padding:8px 12px;font-size:13px;line-height:1.5;max-width:230px}
-#msg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,8,18,.65)}
+#help{position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);padding:9px 12px;font-size:12px;line-height:1.7;max-width:240px;color:var(--muted)}
+#help b{color:var(--ink);font-weight:600}
+#msg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(24,42,43,.28)}
 #msg.on{display:flex}
 #msg div{padding:26px 32px;text-align:center;max-width:320px}
-#msg h2{margin:0 0 6px;font-family:"Orbitron","Rajdhani",ui-monospace,monospace;font-size:22px;letter-spacing:.06em;color:var(--amber);text-shadow:0 0 12px rgba(46,242,255,.8)}
-#msg p{margin:0 0 16px}
-#cross{position:fixed;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;border:1px solid rgba(46,242,255,.8);box-shadow:0 0 8px rgba(46,242,255,.8);pointer-events:none}
-#lv{font-family:"Orbitron","Rajdhani",ui-monospace,monospace;font-size:13px;letter-spacing:.08em}
-@media (max-width:560px){#help{display:none}#hud{font-size:14px;left:8px;right:8px}#hud>div{padding:6px 10px}#bar{left:8px;right:8px;flex-wrap:wrap}#bar button{padding:6px 9px;font-size:14px}}
+#msg h2{margin:0 0 8px;font-family:var(--serif);font-weight:500;font-size:22px;letter-spacing:.06em;color:var(--ink)}
+#msg p{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.7}
+#msg p b{color:var(--ink)}
+#cross{position:fixed;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:var(--coral);opacity:.85;pointer-events:none}
+#lv{font-family:"Songti SC","Noto Serif CJK SC",SimSun,serif;font-size:14px;letter-spacing:.04em}
+@media (max-width:560px){#help{display:none}#hud{font-size:13px;left:8px;right:8px}#hud>div{padding:6px 10px}#bar{left:8px;right:8px;flex-wrap:wrap}#bar button{padding:6px 9px;font-size:12px}}
 @media (max-height:480px){#hud{top:calc(env(safe-area-inset-top,0px) + 6px)}#bar{top:calc(env(safe-area-inset-top,0px) + 46px)}#pad{--s:48px;gap:6px}#hint{bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:40%}#msg div{padding:16px 22px}}
 @media (pointer:coarse){#help{display:none}}
 @media (prefers-reduced-motion:reduce){#hint{transition:none}}
@@ -55,21 +60,21 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <div id="hud">
   <div class="glass"><b id="lv"></b></div>
   <div class="glass" id="st"></div>
-  <div class="glass" id="cmp">N</div>
+  <div class="glass" id="cmp">北</div>
 </div>
 <div id="bar">
-  <button id="bu">Undo</button><button id="br">Restart</button><button id="bh">Hint</button><button id="bk">Skip</button><button id="bl">Levels</button><button id="bm" aria-label="Toggle sound">Sound</button>
+  <button id="bu">撤销</button><button id="br">重开</button><button id="bh">提示</button><button id="bk">跳过</button><button id="bl">选关</button><button id="bm" aria-label="声音开关">声音</button>
 </div>
-<div id="help" class="glass">W / S: step forward / back<br>A / D: turn left / right<br>Z: undo &nbsp; R: restart</div>
+<div id="help" class="glass"><b>W / S</b> 前进 / 后退<br><b>A / D</b> 左右转身<br><b>Z</b> 撤销 &nbsp; <b>R</b> 重开</div>
 <div id="pad">
-  <button class="f" data-k="f" aria-label="Step forward">▲</button>
-  <button class="l" data-k="l" aria-label="Turn left">◀</button>
-  <button class="b" data-k="b" aria-label="Step back">▼</button>
-  <button class="r" data-k="r" aria-label="Turn right">▶</button>
+  <button class="f" data-k="f" aria-label="前进">▲</button>
+  <button class="l" data-k="l" aria-label="左转">◀</button>
+  <button class="b" data-k="b" aria-label="后退">▼</button>
+  <button class="r" data-k="r" aria-label="右转">▶</button>
 </div>
-<div id="hint" class="glass">Swipe up to step forward, down to step back,<br>left or right to turn. Or use the buttons.</div>
-<div id="msg"><div class="glass"><h2 id="mt"></h2><p id="mp"></p><button id="mb"></button> <button id="ml">Levels</button></div></div>
-<div id="sel"><div class="glass"><h2>Select sector</h2><div id="grid"></div><button id="sc">Close</button></div></div>
+<div id="hint">上滑前进，下滑后退<br>左右滑动转身；也可以用右下角按钮</div>
+<div id="msg"><div class="glass"><h2 id="mt"></h2><p id="mp"></p><button id="mb"></button> <button id="ml">选关</button></div></div>
+<div id="sel"><div class="glass"><h2>选择关卡</h2><div id="grid"></div><button id="sc">关闭</button></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -92,39 +97,35 @@ const LEVELS=[
  ["##########","# .$    1#","#@    #  #","#1     # #","# .#     #","#      $ #","# $  .   #","##########"]
 ];
 const D=[[0,-1],[1,0],[0,1],[-1,0]]; // N E S W
+const PAL={sky:0xf7efe6,wall:0xcbbce0,wallAlt:0xc3b3d9,floor:0xfdf7ee,
+ crate:0xdf8a6e,crateOk:0x8fcbb0,lid:0xf7e8da,goal:0xe98f76,portalA:0xb39dd6,portalB:0x7fc4b0};
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x050a14);
-scene.fog=new THREE.Fog(0x050a14,1.5,9);
-const cam=new THREE.PerspectiveCamera(78,1,0.05,40);
+scene.fog=new THREE.Fog(0xf6e8da,10,24);
+const cam=new THREE.PerspectiveCamera(70,1,0.05,60);
 scene.add(cam);
-scene.add(new THREE.AmbientLight(0x4a6a9a,0.5));
-const torch=new THREE.PointLight(0xbfefff,1.2,10,1.4);
-cam.add(torch);
-const ren=new THREE.WebGLRenderer({antialias:true});
+scene.add(new THREE.HemisphereLight(0xfff8f0,0xe6d9ee,0.95));
+const sun=new THREE.DirectionalLight(0xfff1e0,0.62);
+sun.castShadow=true;
+sun.shadow.mapSize.width=2048;sun.shadow.mapSize.height=2048;
+sun.shadow.camera.near=1;sun.shadow.camera.far=60;
+sun.shadow.bias=-0.0003;sun.shadow.normalBias=0.02;
+scene.add(sun);scene.add(sun.target);
+const ren=new THREE.WebGLRenderer({antialias:true,alpha:true});
+ren.setClearColor(0x000000,0);
 ren.setPixelRatio(Math.min(devicePixelRatio||1,2));
+ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;
 document.body.prepend(ren.domElement);
 function resize(){ren.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
 addEventListener('resize',resize);resize();
 
-function mk(fn){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');fn(g);
- const t=new THREE.CanvasTexture(c);t.magFilter=THREE.NearestFilter;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
-const brick=mk(g=>{g.fillStyle='#0f1a2e';g.fillRect(0,0,64,64);
- g.fillStyle='#1b2c4a';g.fillRect(3,3,58,58);g.fillStyle='#243b61';g.fillRect(3,3,58,5);
- g.strokeStyle='#2ef2ff';g.lineWidth=2;g.beginPath();g.moveTo(0,33);g.lineTo(64,33);g.stroke();
- g.fillStyle='#7fe9ff';[[8,8],[56,8],[8,56],[56,56]].forEach(p=>g.fillRect(p[0]-1,p[1]-1,3,3))});
-const stone=mk(g=>{g.fillStyle='#071120';g.fillRect(0,0,64,64);g.fillStyle='#0c1a30';g.fillRect(3,3,58,58);
- g.strokeStyle='#2ef2ff';g.lineWidth=2;g.strokeRect(1,1,62,62);g.fillStyle='#bff9ff';g.fillRect(0,0,7,3);g.fillRect(0,0,3,7)});
-const crate=mk(g=>{g.fillStyle='#262a36';g.fillRect(0,0,64,64);g.fillStyle='#363c4c';g.fillRect(8,8,48,48);
- g.strokeStyle='#ff9a2e';g.lineWidth=4;g.strokeRect(2,2,60,60);g.lineWidth=2;
- g.beginPath();g.moveTo(8,8);g.lineTo(56,56);g.moveTo(56,8);g.lineTo(8,56);g.stroke();
- g.fillStyle='#ffd08a';g.fillRect(28,28,8,8)});
-const mWall=new THREE.MeshLambertMaterial({map:brick,emissive:0x2a7080,emissiveMap:brick});
-const mFloor=new THREE.MeshLambertMaterial({map:stone,emissive:0x2a8a9a,emissiveMap:stone});
-const mCeil=new THREE.MeshLambertMaterial({color:0x070d1a});
-const mBox=new THREE.MeshLambertMaterial({map:crate,emissive:0xaa6a22,emissiveMap:crate});
-const mBoxOn=new THREE.MeshLambertMaterial({map:crate,color:0x7dffc0,emissive:0x22cc77,emissiveMap:crate});
-const gMark=new THREE.MeshBasicMaterial({color:0xff3df0});
-const gBeam=new THREE.MeshBasicMaterial({color:0xff3df0,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false});
+const mWall=new THREE.MeshLambertMaterial({color:PAL.wall});
+const mWallAlt=new THREE.MeshLambertMaterial({color:PAL.wallAlt});
+const mFloor=new THREE.MeshLambertMaterial({color:PAL.floor});
+const mBox=new THREE.MeshLambertMaterial({color:PAL.crate});
+const mBoxOn=new THREE.MeshLambertMaterial({color:PAL.crateOk});
+const mLid=new THREE.MeshLambertMaterial({color:PAL.lid});
+const gMark=new THREE.MeshBasicMaterial({color:PAL.goal});
+const gBeam=new THREE.MeshBasicMaterial({color:PAL.goal,transparent:true,opacity:.10,side:THREE.DoubleSide,depthWrite:false});
 
 let group,floor,walls,goals,boxes,boxMesh,px,py,dir,cx,cz,cyaw,moves,pushes,hist,lvl=0,won=false,anims=[];
 const $=id=>document.getElementById(id);
@@ -143,40 +144,62 @@ function load(i){
   if('@+'.includes(c)){px=x;py=y}
  }}
  for(const k in pp)if(pp[k].length===2){portal.set(pp[k][0],pp[k][1]);portal.set(pp[k][1],pp[k][0])}
+ if(portal.size&&!save.tp){save.tp=1;persist();setTimeout(()=>toast('这一关有传送门：踩上彩色的圈，会传送到配对的圈'),900)}
  // flood fill walkable interior so nothing is drawn outside the walls
  const st=[[px,py]];
  while(st.length){const[x,y]=st.pop();if(!walls[y]||walls[y][x]!==false||floor[y][x])continue;floor[y][x]=true;D.forEach(d=>st.push([x+d[0],y+d[1]]));const pt=portal.get(y*W+x);if(pt!==undefined)st.push([pt%W,(pt/W)|0])}
  const pl=new THREE.PlaneGeometry(1,1),bx=new THREE.BoxGeometry(1,1,1);
+ const gridPts=[];
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-  if(walls[y][x]){const w=new THREE.Mesh(bx,mWall);w.position.set(x,.5,y);group.add(w)}
-  else if(floor[y][x]){
-   const f=new THREE.Mesh(pl,mFloor);f.rotation.x=-Math.PI/2;f.position.set(x,0,y);group.add(f);
-   const c=new THREE.Mesh(pl,mCeil);c.rotation.x=Math.PI/2;c.position.set(x,1,y);group.add(c);
+  if(walls[y][x]){
+   const w=new THREE.Mesh(bx,(x+y)%3===0?mWall:mWallAlt);
+   w.position.set(x,.5,y);w.castShadow=true;w.receiveShadow=true;group.add(w);
+  }else if(floor[y][x]){
+   const f=new THREE.Mesh(pl,mFloor);f.rotation.x=-Math.PI/2;f.position.set(x,.001,y);f.receiveShadow=true;group.add(f);
+   gridPts.push(x,.012,y,x+1,.012,y,x,.012,y,x,.012,y+1);
   }}
+ if(gridPts.length){
+  const gg=new THREE.BufferGeometry();
+  gg.setAttribute('position',new THREE.Float32BufferAttribute(gridPts,3));
+  group.add(new THREE.LineSegments(gg,new THREE.LineBasicMaterial({color:0xd9cfe6,transparent:true,opacity:.5})));
+ }
+ const R=Math.max(W,H)*.85+2;
+ sun.position.set(W/2+6,14,H/2+8);
+ sun.target.position.set(W/2,0,H/2);
+ const sc=sun.shadow.camera;
+ sc.left=-R;sc.right=R;sc.top=R;sc.bottom=-R;sc.updateProjectionMatrix();
  const ring=new THREE.RingGeometry(.2,.32,24),beam=new THREE.CylinderGeometry(.1,.1,.95,12,1,true);
  goals.forEach(g=>{
   const r=new THREE.Mesh(ring,gMark);r.rotation.x=-Math.PI/2;r.position.set(g.x,.01,g.y);group.add(r);
   const b=new THREE.Mesh(beam,gBeam);b.position.set(g.x,.48,g.y);group.add(b);
  });
- const pcol={1:0xb06bff,2:0x3dff9a};
+ const pcol={1:PAL.portalA,2:PAL.portalB};
  for(const k in pp)pp[k].forEach(i=>{const X=i%W,Z=(i/W)|0;
   const r=new THREE.Mesh(new THREE.TorusGeometry(.3,.045,8,28),new THREE.MeshBasicMaterial({color:pcol[k]}));r.rotation.x=Math.PI/2;r.position.set(X,.05,Z);group.add(r);spin.push(r);
   const d=new THREE.Mesh(new THREE.CircleGeometry(.3,24),new THREE.MeshBasicMaterial({color:pcol[k],transparent:true,opacity:.35}));d.rotation.x=-Math.PI/2;d.position.set(X,.02,Z);group.add(d)});
- const bg=new THREE.BoxGeometry(.8,.8,.8);
- boxes.forEach(b=>{const m=new THREE.Mesh(bg,mBox);m.position.set(b.x,.4,b.y);group.add(m);boxMesh.push(m)});
+ const bg=new THREE.BoxGeometry(.8,.8,.8),lidG=new THREE.BoxGeometry(.86,.06,.86);
+ boxes.forEach(b=>{const m=new THREE.Mesh(bg,mBox);m.position.set(b.x,.4,b.y);m.castShadow=true;m.receiveShadow=true;group.add(m);boxMesh.push(m);
+  const lid=new THREE.Mesh(lidG,mLid);lid.position.y=.41;lid.castShadow=true;m.add(lid)});
  dir=0;cyaw=0;
- // face the first open direction so the view isn't a wall
- for(let k=0;k<4;k++){if(!blocked(px+D[k][0],py+D[k][1])){dir=k;break}}
+ // face the direction with the longest open sightline (no walls or crates)
+ let bestK=-1,bestLen=-1;
+ for(let k=0;k<4;k++){
+  let len=0,x=px+D[k][0],y=py+D[k][1];
+  while(len<20&&!blocked(x,y)&&!boxes.some(b=>b.x===x&&b.y===y)){len++;x+=D[k][0];y+=D[k][1]}
+  if(len>bestLen){bestLen=len;bestK=k}
+ }
+ if(bestLen>0)dir=bestK;else for(let k=0;k<4;k++){if(!blocked(px+D[k][0],py+D[k][1])){dir=k;break}}
+ if(window.FORCE_DIR>=0&&window.FORCE_DIR<4&&!blocked(px+D[window.FORCE_DIR][0],py+D[window.FORCE_DIR][1]))dir=window.FORCE_DIR;
  cyaw=-dir*Math.PI/2;cx=px;cz=py;moves=0;pushes=0;hist=[];
  init={p:py*GW+px,b:boxes.map(b=>b.y*GW+b.x)};hints=0;
  setCam();paint();
 }
-function setCam(y=.5){cam.position.set(cx,y,cz);cam.rotation.set(0,cyaw,0);$('cmp').textContent='NESW'[dir]}
+function setCam(y=.5){cam.position.set(cx,y,cz);cam.rotation.set(0,cyaw,0);$('cmp').textContent='北东南西'[dir]}
 function onGoal(x,y){return goals.some(g=>g.x===x&&g.y===y)}
 function paint(){
  boxes.forEach((b,i)=>{boxMesh[i].material=onGoal(b.x,b.y)?mBoxOn:mBox});
- $('lv').textContent='SECTOR '+(lvl+1)+' / '+LEVELS.length;
- $('st').textContent=moves+' steps · '+pushes+' pushes';
+ $('lv').textContent='第 '+(lvl+1)+' 关 / '+LEVELS.length;
+ $('st').textContent=moves+' 步 · '+pushes+' 推';
 }
 function tween(dur,fn,done){anims.push({t0:performance.now(),dur,fn,done})}
 const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
@@ -228,12 +251,12 @@ function check(){
  won=true;buzz([30,40,60]);stopRep();
  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.35,'sine',.07),i*110));
  const last=lvl===LEVELS.length-1;
- $('mt').textContent=last?'ALL SECTORS CLEARED':'SECTOR CLEARED';
+ $('mt').textContent=last?'全部通关':'过关';
  const o=solve(init.p,init.b);let s=2;
  if(o){const r=moves/Math.max(1,o.length);s=r<=1.3?3:r<=2?2:1}
  s=Math.max(1,s-hints);if(s>(save[lvl]||0)){save[lvl]=s;persist()}
- $('mp').innerHTML='<span style="font-size:28px;color:var(--amber)">'+'★'.repeat(s)+'☆'.repeat(3-s)+'</span><br>'+moves+' steps · '+pushes+' pushes'+(o?' · best '+o.length:'')+(hints?' · hints '+hints:'');
- $('mb').textContent=last?'Play again':'Next sector';
+ $('mp').innerHTML='<span style="font-size:28px;color:var(--coral)">'+'★'.repeat(s)+'☆'.repeat(3-s)+'</span><br>'+moves+' 步 · '+pushes+' 推'+(o?' · 最优 '+o.length+' 步':'')+(hints?' · 提示 '+hints:'');
+ $('mb').textContent=last?'再玩一次':'下一关';
  $('msg').classList.add('on');
 }
 function go(n){load((n+LEVELS.length)%LEVELS.length)}
@@ -290,7 +313,7 @@ function beep(f,d=.1,type='sine',v=.08,f2){
   if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
   g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d)}catch(e){}
 }
-$('bm').onclick=()=>{mute=!mute;$('bm').textContent=mute?'Muted':'Sound'};
+$('bm').onclick=()=>{mute=!mute;$('bm').textContent=mute?'静音':'声音'};
 const parts=[],pgeo=new THREE.BoxGeometry(.05,.05,.05);
 function burst(x,z,col){for(let i=0;i<24;i++){
  const m=new THREE.Mesh(pgeo,new THREE.MeshBasicMaterial({color:col,transparent:true}));m.position.set(x,.4,z);
@@ -302,7 +325,7 @@ const selOn=()=>$('sel').classList.contains('on');
 let skipT=null;
 function skipLevel(){
  if(anims.length||selOn())return;
- if(lvl>=LEVELS.length-1)return toast('This is the last sector');
+ if(lvl>=LEVELS.length-1)return toast('已经是最后一关了');
  const b=$('bk');
  if(!skipT){b.textContent='Skip?';skipT=setTimeout(()=>{b.textContent='Skip';skipT=null},2500);return}
  clearTimeout(skipT);skipT=null;b.textContent='Skip';
@@ -334,11 +357,11 @@ function solve(p0,b0){
 function hint(){
  if(anims.length||won||selOn())return;
  const p=solve(py*GW+px,boxes.map(b=>b.y*GW+b.x));
- if(!p)return toast('This position can’t be solved. Undo or restart.');
+ if(!p)return toast('这个局面已经无解了，撤销或重开吧。');
  if(!p.length)return;
  hints++;
  const r=(p[0]-dir+4)%4;
- toast('Hint: '+['step forward','turn right','turn around','turn left'][r]+' (facing '+'NESW'[p[0]]+' needed). Costs one star.');
+ toast('提示：'+['前进','右转','转身','左转'][r]+'（需要面向'+'北东南西'[p[0]]+'）。会消耗一颗星。');
 }
 
 // Sector select with saved stars
@@ -364,11 +387,15 @@ function frame(now){
   q.m.material.opacity=Math.max(0,1-q.t/.9);
   if(q.t>.9){scene.remove(q.m);q.m.material.dispose();parts.splice(i,1)}}
  spin.forEach(m=>m.scale.setScalar(1+.12*Math.sin(now/300)));
- gBeam.opacity=.2+.1*Math.sin(now/380);
+ gBeam.opacity=.08+.04*Math.sin(now/380);
  ren.render(scene,cam);
  requestAnimationFrame(frame);
 }
-load(0);
+const ql=parseInt(new URLSearchParams(location.search).get('level'),10);
+const qd=parseInt(new URLSearchParams(location.search).get('dir'),10);
+window.FORCE_DIR=Number.isFinite(qd)?qd:-1;
+load(Number.isFinite(ql)?Math.max(0,Math.min(LEVELS.length-1,ql-1)):0);
+window.__nc={load,step,turn,undo,go,state:()=>({px,py,dir,moves,pushes,lvl,won,boxes:boxes.map(b=>({...b}))})};
 requestAnimationFrame(frame);
 </script>
 </body>
