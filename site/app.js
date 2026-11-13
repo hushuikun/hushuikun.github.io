@@ -254,6 +254,7 @@ function appendHighlighted(element, text, query) {
 function createMemory(memory, index) {
   const { year, month, day } = getDateParts(memory.date);
   const row = make("div", "timeline-row");
+  row.dataset.date = memory.date;
   const date = make("div", "timeline-date");
   date.append(make("span", "timeline-year", year));
   date.append(make("span", "timeline-day", `${month}.${day}`));
@@ -292,8 +293,7 @@ function createMemory(memory, index) {
     article.append(frame);
   }
 
-  const copy = make("div", "memory-copy");
-  if (memory.title) {
+  const copy = make("div", "memory-copy");  if (memory.title) {
     const title = make("h3", "memory-title");
     appendHighlighted(title, memory.title, state.query);
     copy.append(title);
@@ -388,6 +388,7 @@ function renderLibTabs() {
 
 function createLibEntry(item, kind) {
   const article = make("article", "memoir-entry lib-entry lib-" + kind);
+  if (kind === "memory" && typeof item.order === "number") article.dataset.order = item.order;
   const year = kind === "memory" ? "" : libYear(item);
   if (year) {
     article.append(make("span", "lib-year", year));
@@ -405,9 +406,79 @@ function createLibEntry(item, kind) {
     const sub = item.creator || "";
     if (sub) body.append(make("p", "lib-sub", sub));
     if (item.note) body.append(make("p", "memoir-text lib-note", item.note));
+
+    const refs = relatedRefs(item);
+    if (refs.timeline.length || refs.memories.length) {
+      const box = make("p", "lib-related");
+      box.append(make("span", "lib-related-label", "相关记录"));
+      refs.timeline.forEach(({ date }) => {
+        const chip = make("button", "lib-ref", date);
+        chip.type = "button";
+        chip.addEventListener("click", () => goTimelineDate(date));
+        box.append(chip);
+      });
+      refs.memories.forEach(({ order }) => {
+        const chip = make("button", "lib-ref", "记忆 " + order);
+        chip.type = "button";
+        chip.addEventListener("click", () => goMemory(order));
+        box.append(chip);
+      });
+      body.append(box);
+    }
   }
   article.append(body);
   return article;
+}
+
+function relatedRefs(item) {
+  const terms = [];
+  if (item.title) terms.push(item.title.replace(/[《》]/g, ""));
+  if (Array.isArray(item.aliases)) terms.push(...item.aliases);
+  const dates = new Set();
+  memories.forEach((memory) => {
+    const text = memory.text || "";
+    if (terms.some((term) => term && text.includes(term))) dates.add(memory.date);
+  });
+  if (Array.isArray(item.related)) item.related.forEach((date) => dates.add(date));
+  const orders = new Set();
+  memoirs.forEach((memory) => {
+    if (kindOf(memory) !== "memory") return;
+    const text = memory.text || "";
+    if (terms.some((term) => term && text.includes(term))) orders.add(memory.order);
+  });
+  return {
+    timeline: [...dates].sort().reverse().map((date) => ({ date })),
+    memories: [...orders].sort((a, b) => b - a).map((order) => ({ order })),
+  };
+}
+
+function goTimelineDate(date) {
+  state.year = "all";
+  state.tag = "all";
+  state.query = "";
+  if (searchInput) searchInput.value = "";
+  if (searchClear) searchClear.hidden = true;
+  renderFilters();
+  renderTagFilters();
+  renderMemories();
+  selectTab(document.querySelector("#timeline-tab"));
+  const row = document.querySelector(`.timeline-row[data-date="${date}"]`);
+  if (!row) return;
+  row.scrollIntoView({ behavior: "smooth", block: "center" });
+  row.classList.add("is-flash");
+  setTimeout(() => row.classList.remove("is-flash"), 1700);
+}
+
+function goMemory(order) {
+  state.lib = "memory";
+  renderLibTabs();
+  renderMemoirs();
+  selectTab(document.querySelector("#memoirs-tab"));
+  const entry = document.querySelector(`.lib-entry[data-order="${order}"]`);
+  if (!entry) return;
+  entry.scrollIntoView({ behavior: "smooth", block: "center" });
+  entry.classList.add("is-flash");
+  setTimeout(() => entry.classList.remove("is-flash"), 1700);
 }
 
 function renderMemoirs() {
