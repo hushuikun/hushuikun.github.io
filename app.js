@@ -30,6 +30,7 @@ const state = {
   tag: "all",
   query: "",
   spotlightDate: null,
+  lib: "memory",
 };
 
 const make = (tag, className, text) => {
@@ -253,6 +254,7 @@ function appendHighlighted(element, text, query) {
 function createMemory(memory, index) {
   const { year, month, day } = getDateParts(memory.date);
   const row = make("div", "timeline-row");
+  row.dataset.date = memory.date;
   const date = make("div", "timeline-date");
   date.append(make("span", "timeline-year", year));
   date.append(make("span", "timeline-day", `${month}.${day}`));
@@ -291,8 +293,7 @@ function createMemory(memory, index) {
     article.append(frame);
   }
 
-  const copy = make("div", "memory-copy");
-  if (memory.title) {
+  const copy = make("div", "memory-copy");  if (memory.title) {
     const title = make("h3", "memory-title");
     appendHighlighted(title, memory.title, state.query);
     copy.append(title);
@@ -346,27 +347,154 @@ function renderMemories() {
 
 /* ---------------------------------------------------------------- memoirs */
 
-function renderMemoirs() {
-  const visible = [...memoirs].sort((a, b) => {
-    if (a.date && b.date) return b.date.localeCompare(a.date);
-    return (b.order || 0) - (a.order || 0);
+const LIB_KINDS = [
+  { key: "memory", label: "记忆" },
+  { key: "music", label: "音乐" },
+  { key: "film", label: "影视" },
+  { key: "game", label: "游戏" },
+];
+
+const libTabs = document.querySelector("#lib-tabs");
+const kindOf = (item) => item.kind || "memory";
+const libCount = (kind) => memoirs.filter((item) => kindOf(item) === kind).length;
+
+function libYear(item) {
+  const raw = item.year ? String(item.year) : item.date ? item.date.slice(0, 7) : "";
+  return raw.replace("-", ".");
+}
+
+function libSortKey(item) {
+  if (item.date) return item.date;
+  if (item.year) return String(item.year);
+  return "";
+}
+
+function renderLibTabs() {
+  libTabs.replaceChildren();
+  LIB_KINDS.forEach(({ key, label }) => {
+    const button = make("button", "lib-tab", label);
+    button.type = "button";
+    button.dataset.kind = key;
+    button.setAttribute("aria-pressed", String(state.lib === key));
+    button.append(make("span", "lib-count", String(libCount(key))));
+    button.addEventListener("click", () => {
+      state.lib = key;
+      renderLibTabs();
+      renderMemoirs();
+    });
+    libTabs.append(button);
   });
-  memoirList.replaceChildren();
-  visible.forEach((memoir) => {
-    const article = make("article", "memoir-entry");
-    if (memoir.date) {
-      const date = make("time", "memoir-date", formatDate(memoir.date));
-      date.dateTime = memoir.date;
-      article.append(date);
-    } else {
-      article.classList.add("is-plain");
+}
+
+function createLibEntry(item, kind) {
+  const article = make("article", "memoir-entry lib-entry lib-" + kind);
+  if (kind === "memory" && typeof item.order === "number") article.dataset.order = item.order;
+  const year = kind === "memory" ? "" : libYear(item);
+  if (year) {
+    article.append(make("span", "lib-year", year));
+  } else {
+    article.classList.add("is-plain");
+  }
+
+  const body = make("div", "memoir-body");
+  if (kind === "memory") {
+    if (item.text) body.append(make("p", "memoir-text", item.text));
+  } else {
+    const label = LIB_KINDS.find((k) => k.key === kind).label;
+    body.append(make("span", "lib-kind lib-kind-" + kind, label));
+    if (item.title) body.append(make("h2", "memoir-title lib-title", item.title));
+    const sub = item.creator || "";
+    if (sub) body.append(make("p", "lib-sub", sub));
+    if (item.note) body.append(make("p", "memoir-text lib-note", item.note));
+
+    const refs = relatedRefs(item);
+    if (refs.timeline.length || refs.memories.length) {
+      const box = make("p", "lib-related");
+      box.append(make("span", "lib-related-label", "相关记录"));
+      refs.timeline.forEach(({ date }) => {
+        const chip = make("button", "lib-ref", date);
+        chip.type = "button";
+        chip.addEventListener("click", () => goTimelineDate(date));
+        box.append(chip);
+      });
+      refs.memories.forEach(({ order }) => {
+        const chip = make("button", "lib-ref", "记忆 " + order);
+        chip.type = "button";
+        chip.addEventListener("click", () => goMemory(order));
+        box.append(chip);
+      });
+      body.append(box);
     }
-    const body = make("div", "memoir-body");
-    if (memoir.title) body.append(make("h2", "memoir-title", memoir.title));
-    if (memoir.text) body.append(make("p", "memoir-text", memoir.text));
-    article.append(body);
-    memoirList.append(article);
+  }
+  article.append(body);
+  return article;
+}
+
+function relatedRefs(item) {
+  const terms = [];
+  if (item.title) terms.push(item.title.replace(/[《》]/g, ""));
+  if (Array.isArray(item.aliases)) terms.push(...item.aliases);
+  const dates = new Set();
+  memories.forEach((memory) => {
+    const text = memory.text || "";
+    if (terms.some((term) => term && text.includes(term))) dates.add(memory.date);
   });
+  if (Array.isArray(item.related)) item.related.forEach((date) => dates.add(date));
+  const orders = new Set();
+  memoirs.forEach((memory) => {
+    if (kindOf(memory) !== "memory") return;
+    const text = memory.text || "";
+    if (terms.some((term) => term && text.includes(term))) orders.add(memory.order);
+  });
+  return {
+    timeline: [...dates].sort().reverse().map((date) => ({ date })),
+    memories: [...orders].sort((a, b) => b - a).map((order) => ({ order })),
+  };
+}
+
+function goTimelineDate(date) {
+  state.year = "all";
+  state.tag = "all";
+  state.query = "";
+  if (searchInput) searchInput.value = "";
+  if (searchClear) searchClear.hidden = true;
+  renderFilters();
+  renderTagFilters();
+  renderMemories();
+  selectTab(document.querySelector("#timeline-tab"));
+  const row = document.querySelector(`.timeline-row[data-date="${date}"]`);
+  if (!row) return;
+  row.scrollIntoView({ behavior: "smooth", block: "center" });
+  row.classList.add("is-flash");
+  setTimeout(() => row.classList.remove("is-flash"), 1700);
+}
+
+function goMemory(order) {
+  state.lib = "memory";
+  renderLibTabs();
+  renderMemoirs();
+  selectTab(document.querySelector("#memoirs-tab"));
+  const entry = document.querySelector(`.lib-entry[data-order="${order}"]`);
+  if (!entry) return;
+  entry.scrollIntoView({ behavior: "smooth", block: "center" });
+  entry.classList.add("is-flash");
+  setTimeout(() => entry.classList.remove("is-flash"), 1700);
+}
+
+function renderMemoirs() {
+  const kind = state.lib;
+  const visible = memoirs
+    .filter((item) => kindOf(item) === kind)
+    .sort((a, b) => {
+      if (kind === "memory") return (b.order || 0) - (a.order || 0);
+      return libSortKey(b).localeCompare(libSortKey(a));
+    });
+  memoirList.replaceChildren();
+  if (!visible.length) {
+    memoirList.append(make("p", "empty-state", "还没有记录"));
+    return;
+  }
+  visible.forEach((item) => memoirList.append(createLibEntry(item, kind)));
 }
 
 /* ---------------------------------------------------------------- stats */
@@ -678,10 +806,13 @@ document.addEventListener("keydown", (event) => {
 
 spotlightShuffle.addEventListener("click", () => renderSpotlight(true));
 
+const libParam = new URLSearchParams(location.search).get("lib");
+if (libParam && LIB_KINDS.some((k) => k.key === libParam)) state.lib = libParam;
 renderFilters();
 renderTagFilters();
 renderSpotlight();
 renderMemories();
+renderLibTabs();
 renderMemoirs();
 
 (() => {
