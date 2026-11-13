@@ -704,15 +704,19 @@ tabs.forEach((tab, index) => {
   });
 });
 
-// 访问统计脚本被拦截时，隐藏整个统计条，避免一直显示占位符
+// 本地预览时隐藏访问统计（不蒜子按域名计数，localhost 是全世界的公共池）
 window.addEventListener("load", () => {
+  const strip = document.querySelector(".visit-strip");
+  if (!strip) return;
+  const host = location.hostname;
+  if (host === "localhost" || host === "127.0.0.1" || host === "::1") {
+    strip.hidden = true;
+    return;
+  }
   setTimeout(() => {
     const pv = document.getElementById("busuanzi_container_site_pv");
     const uv = document.getElementById("busuanzi_container_site_uv");
     const loaded = (pv && pv.style.display !== "none") || (uv && uv.style.display !== "none");
-    if (!loaded) {
-      const strip = document.querySelector(".visit-strip");
-      if (strip) strip.hidden = true;
-    }
+    if (!loaded) strip.hidden = true;
   }, 6000);
 });

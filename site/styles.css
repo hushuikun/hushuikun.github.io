@@ -1197,6 +1197,10 @@ figure {
   font-size: 12px;
 }
 
+.visit-strip[hidden] {
+  display: none;
+}
+
 .visit-label {
   color: var(--ink);
   font-size: 11px;
