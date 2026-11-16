@@ -366,6 +366,30 @@ figure {
   display: block;
 }
 
+.frame-count {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgb(24 42 43 / 72%);
+  color: white;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.dialog-image-wrap.is-multi {
+  aspect-ratio: auto;
+  display: grid;
+  gap: 3px;
+  background: transparent;
+}
+
+.dialog-image-wrap.is-multi .dialog-image {
+  aspect-ratio: 16 / 9;
+  height: auto;
+}
+
 .memory-copy {
   display: flex;
   min-width: 0;
