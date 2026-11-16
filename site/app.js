@@ -82,22 +82,30 @@ const allTags = () => {
   });
 };
 
+function memoryImages(memory) {
+  if (Array.isArray(memory.images) && memory.images.length) return memory.images;
+  return memory.image ? [memory.image] : [];
+}
+
 function openMemory(memory) {
   const active = document.activeElement;
   dialogTrigger = active instanceof HTMLElement && active !== document.body ? active : null;
-  if (memory.image) {
-    dialogImage.src = memory.image;
-    dialogImage.alt = memory.alt || memory.title || "时间线照片";
-    dialogImageWrap.hidden = false;
-  } else {
-    dialogImage.removeAttribute("src");
-    dialogImage.alt = "";
-    dialogImageWrap.hidden = true;
-  }
+  const imgs = memoryImages(memory);
+  dialogImageWrap.replaceChildren();
+  imgs.forEach((src, index) => {
+    const img = document.createElement("img");
+    img.className = "dialog-image";
+    img.src = src;
+    img.alt = memory.alt || memory.title || "时间线照片";
+    if (index > 0) img.loading = "lazy";
+    dialogImageWrap.append(img);
+  });
+  dialogImageWrap.hidden = imgs.length === 0;
+  dialogImageWrap.classList.toggle("is-multi", imgs.length > 1);
   dialogDate.textContent = [formatDate(memory.date), memory.time].filter(Boolean).join(" ");
   dialogLocation.textContent = memory.location || "";
   dialogLocation.hidden = !memory.location;
-  dialogTitle.textContent = memory.title || (memory.image ? "照片" : "那天的记录");
+  dialogTitle.textContent = memory.title || (imgs.length ? "照片" : "那天的记录");
   dialogText.textContent = memory.text || "";
   dialogText.hidden = !memory.text;
   dialog.showModal();
@@ -260,7 +268,8 @@ function createMemory(memory, index) {
   date.append(make("span", "timeline-day", `${month}.${day}`));
   if (memory.time) date.append(make("span", "timeline-time", memory.time));
 
-  const hasImage = Boolean(memory.image);
+  const imgs = memoryImages(memory);
+  const hasImage = imgs.length > 0;
   const article = make("article", "memory-card");
   article.classList.toggle("is-text-only", !hasImage);
   article.classList.toggle("is-reversed", hasImage && index % 2 === 1);
@@ -269,10 +278,11 @@ function createMemory(memory, index) {
     frame.type = "button";
     frame.setAttribute("aria-label", `打开 ${memory.title || "照片"}`);
     const image = document.createElement("img");
-    image.src = memory.image;
+    image.src = imgs[0];
     image.alt = memory.alt || memory.title || "时间线照片";
     image.loading = "lazy";
     frame.append(image);
+    if (imgs.length > 1) frame.append(make("span", "frame-count", imgs.length + " 张"));
     const indicator = make("span", "frame-open");
     indicator.setAttribute("aria-hidden", "true");
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
