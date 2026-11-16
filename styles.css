@@ -1245,6 +1245,18 @@ figure {
   font-size: 10px;
 }
 
+.visit-link {
+  color: var(--blue);
+  font-size: 12px;
+  border-bottom: 1px solid rgba(85, 127, 145, 0.35);
+  padding-bottom: 1px;
+}
+
+.visit-link:hover {
+  color: var(--coral);
+  border-bottom-color: rgba(232, 112, 84, 0.45);
+}
+
 @media (max-width: 900px) {
   .stats-section {
     width: min(100% - 48px, 720px);
