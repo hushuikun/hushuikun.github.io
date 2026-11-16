@@ -649,10 +649,18 @@ window.MEMOIRS = [
   },
   {
     kind: "game",
-    title: "奥日两部曲",
+    title: "奥日与黑暗森林",
     creator: "Moon Studios · 微软",
     year: "2015-03",
-    aliases: ["奥日", "Ori"],
-    note: "Moon Studios 开发、微软发行的动作冒险游戏，共两部：2015 年 3 月的《奥日与黑暗森林》和 2020 年 3 月的《奥日与精灵意志》。唯美的画面、银河城式探索和配乐是它的标志。",
+    aliases: ["Ori and the Blind Forest"],
+    note: "Moon Studios 开发、微软发行的动作冒险游戏，2015 年 3 月发售。唯美的画面、银河城式探索和配乐是它的标志。",
+  },
+  {
+    kind: "game",
+    title: "奥日与精灵意志",
+    creator: "Moon Studios · 微软",
+    year: "2020-03",
+    aliases: ["Ori and the Will of the Wisps"],
+    note: "《奥日与黑暗森林》的续作，2020 年 3 月发售。地图更大、战斗更丰富，故事延续奥日与伙伴们的旅程。",
   },
 ];
