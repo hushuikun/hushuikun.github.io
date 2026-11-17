@@ -844,3 +844,22 @@ tabs.forEach((tab, index) => {
     next.focus();
   });
 });
+
+// 访问统计：页面只读构建时的快照（见 .github/workflows/pages.yml），
+// 计数本身由 head 里的 Stats4U 隐形计数器完成
+(() => {
+  const todayEl = document.querySelector("#visit-today");
+  const totalEl = document.querySelector("#visit-total");
+  if (!todayEl || !totalEl) return;
+  const fmt = (value) => Number(value || 0).toLocaleString("zh-CN");
+  fetch(`./data/visits.json?v=${Date.now()}`, { cache: "no-store" })
+    .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+    .then((data) => {
+      todayEl.textContent = fmt(data.today && data.today.visitors);
+      totalEl.textContent = fmt(data.total);
+    })
+    .catch(() => {
+      todayEl.textContent = "—";
+      totalEl.textContent = "—";
+    });
+})();

@@ -1211,14 +1211,15 @@ figure {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 6px 18px;
+  gap: 6px 16px;
   margin-top: 14px;
   padding: 15px 20px;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: var(--white);
   color: var(--muted);
-  font-size: 12px;
+  font-family: var(--serif);
+  font-size: 15px;
 }
 
 .visit-strip[hidden] {
@@ -1227,34 +1228,16 @@ figure {
 
 .visit-label {
   color: var(--ink);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-size: 15px;
+  letter-spacing: 0.02em;
 }
 
 .visit-item b {
   color: var(--ink);
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 500;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-}
-
-.visit-note {
-  margin-left: auto;
-  color: #9aa79f;
-  font-size: 10px;
-}
-
-.visit-link {
-  color: var(--blue);
-  font-size: 12px;
-  border-bottom: 1px solid rgba(85, 127, 145, 0.35);
-  padding-bottom: 1px;
-}
-
-.visit-link:hover {
-  color: var(--coral);
-  border-bottom-color: rgba(232, 112, 84, 0.45);
 }
 
 @media (max-width: 900px) {

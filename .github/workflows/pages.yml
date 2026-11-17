@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master # default branch
+  schedule:
+    - cron: "17 * * * *" # 每小时刷新一次访问统计快照
+  workflow_dispatch:
 
 jobs:
   pages:
@@ -12,6 +15,28 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Snapshot visitor stats
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          mkdir -p site/data
+          api="https://www.stats4u.net/index.php?action=livedata&s4uid=4813137632"
+          if curl -fsS --max-time 20 "$api" -o /tmp/livedata.json; then
+            if jq --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              '{updated: $ts,
+                total: (.total // 0),
+                online: (.online // 0),
+                today: {hits: (.today.hits // 0), visitors: (.today.ips // 0)},
+                yesterday: {hits: (.yesterday.hits // 0), visitors: (.yesterday.ips // 0)}}' \
+              /tmp/livedata.json > /tmp/visits.json; then
+              mv /tmp/visits.json site/data/visits.json
+              cat site/data/visits.json
+              exit 0
+            fi
+          fi
+          echo "stats service unavailable; reusing the snapshot that is online"
+          curl -fsS --max-time 20 "https://hushuikun.com/data/visits.json" -o site/data/visits.json \
+            || rm -f site/data/visits.json
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
