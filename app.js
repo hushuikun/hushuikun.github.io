@@ -2,8 +2,13 @@ const list = document.querySelector("#timeline-list");
 const filters = document.querySelector("#year-filters");
 const count = document.querySelector("#entry-count");
 const dialog = document.querySelector("#memory-dialog");
-const dialogImage = dialog.querySelector(".dialog-image");
+const dialogMedia = dialog.querySelector("#dialog-media");
 const dialogImageWrap = dialog.querySelector(".dialog-image-wrap");
+const dialogPrev = dialog.querySelector(".dialog-nav-prev");
+const dialogNext = dialog.querySelector(".dialog-nav-next");
+const dialogCurrent = dialog.querySelector("#dialog-current");
+const dialogTotal = dialog.querySelector("#dialog-total");
+const dialogDots = dialog.querySelector("#dialog-dots");
 const dialogDate = dialog.querySelector(".dialog-date");
 const dialogLocation = dialog.querySelector(".dialog-location");
 const dialogTitle = dialog.querySelector("#dialog-title");
@@ -87,21 +92,84 @@ function memoryImages(memory) {
   return memory.image ? [memory.image] : [];
 }
 
-function openMemory(memory) {
+let dialogImages = [];
+let dialogIndex = 0;
+let dialogScrollFrame = 0;
+let dialogDrag = null;
+
+function renderDialogDots() {
+  dialogDots.replaceChildren();
+  if (dialogImages.length <= 1) return;
+  dialogImages.forEach((_, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "dialog-dot";
+    dot.setAttribute("aria-label", `第 ${index + 1} 张图片`);
+    dot.addEventListener("click", () => goToImage(index));
+    dialogDots.append(dot);
+  });
+}
+
+function updateDialogIndex(index) {
+  const total = dialogImages.length;
+  if (!total) return;
+  dialogIndex = Math.max(0, Math.min(total - 1, index));
+  dialogCurrent.textContent = String(dialogIndex + 1);
+  dialogTotal.textContent = String(total);
+  dialogPrev.disabled = dialogIndex === 0;
+  dialogNext.disabled = dialogIndex === total - 1;
+  [...dialogDots.querySelectorAll(".dialog-dot")].forEach((dot, i) => {
+    const active = i === dialogIndex;
+    dot.classList.toggle("is-active", active);
+    dot.setAttribute("aria-current", String(active));
+  });
+}
+
+function goToImage(index, behavior = "auto") {
+  const total = dialogImages.length;
+  if (!total) return;
+  const target = Math.max(0, Math.min(total - 1, index));
+  const width = dialogImageWrap.clientWidth;
+  dialogImageWrap.scrollTo({ left: target * width, behavior });
+  updateDialogIndex(target);
+}
+
+function syncDialogIndex() {
+  if (dialogImages.length <= 1 || dialogScrollFrame) return;
+  dialogScrollFrame = requestAnimationFrame(() => {
+    dialogScrollFrame = 0;
+    const width = dialogImageWrap.clientWidth;
+    if (!width) return;
+    updateDialogIndex(Math.round(dialogImageWrap.scrollLeft / width));
+  });
+}
+
+function openMemory(memory, startIndex = 0) {
   const active = document.activeElement;
   dialogTrigger = active instanceof HTMLElement && active !== document.body ? active : null;
   const imgs = memoryImages(memory);
+  const initialIndex = imgs.length ? Math.max(0, Math.min(imgs.length - 1, startIndex)) : 0;
+  dialogImages = imgs;
+  dialogIndex = initialIndex;
   dialogImageWrap.replaceChildren();
   imgs.forEach((src, index) => {
     const img = document.createElement("img");
     img.className = "dialog-image";
     img.src = src;
     img.alt = memory.alt || memory.title || "时间线照片";
+    img.draggable = false;
     if (index > 0) img.loading = "lazy";
     dialogImageWrap.append(img);
   });
-  dialogImageWrap.hidden = imgs.length === 0;
-  dialogImageWrap.classList.toggle("is-multi", imgs.length > 1);
+  const isMulti = imgs.length > 1;
+  dialogMedia.hidden = imgs.length === 0;
+  dialogMedia.classList.toggle("is-multi", isMulti);
+  dialogImageWrap.classList.toggle("is-multi", isMulti);
+  dialogImageWrap.scrollLeft = 0;
+  dialogCurrent.textContent = String(initialIndex + 1);
+  dialogTotal.textContent = String(imgs.length);
+  renderDialogDots();
+  updateDialogIndex(initialIndex);
   dialogDate.textContent = [formatDate(memory.date), memory.time].filter(Boolean).join(" ");
   dialogLocation.textContent = memory.location || "";
   dialogLocation.hidden = !memory.location;
@@ -109,6 +177,8 @@ function openMemory(memory) {
   dialogText.textContent = memory.text || "";
   dialogText.hidden = !memory.text;
   dialog.showModal();
+  dialogImageWrap.scrollLeft = initialIndex * dialogImageWrap.clientWidth;
+  updateDialogIndex(initialIndex);
 }
 
 /* ---------------------------------------------------------------- spotlight */
@@ -274,6 +344,7 @@ function createMemory(memory, index) {
   article.classList.toggle("is-text-only", !hasImage);
   article.classList.toggle("is-reversed", hasImage && index % 2 === 1);
   if (hasImage) {
+    const media = make("div", "memory-media");
     const frame = make("button", "memory-frame");
     frame.type = "button";
     frame.setAttribute("aria-label", `打开 ${memory.title || "照片"}`);
@@ -281,8 +352,14 @@ function createMemory(memory, index) {
     image.src = imgs[0];
     image.alt = memory.alt || memory.title || "时间线照片";
     image.loading = "lazy";
+    image.draggable = false;
     frame.append(image);
-    if (imgs.length > 1) frame.append(make("span", "frame-count", imgs.length + " 张"));
+    let cardIndex = 0;
+    let countBadge = null;
+    if (imgs.length > 1) {
+      countBadge = make("span", "frame-count", `1 / ${imgs.length}`);
+      frame.append(countBadge);
+    }
     const indicator = make("span", "frame-open");
     indicator.setAttribute("aria-hidden", "true");
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -299,8 +376,41 @@ function createMemory(memory, index) {
     icon.append(path);
     indicator.append(icon);
     frame.append(indicator);
-    frame.addEventListener("click", () => openMemory(memory));
-    article.append(frame);
+    frame.addEventListener("click", () => openMemory(memory, cardIndex));
+    media.append(frame);
+
+    if (imgs.length > 1) {
+      const createNav = (direction, label, className) => {
+        const button = make("button", `frame-nav ${className}`);
+        button.type = "button";
+        button.setAttribute("aria-label", label);
+        const navIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        navIcon.setAttribute("viewBox", "0 0 24 24");
+        navIcon.setAttribute("aria-hidden", "true");
+        navIcon.setAttribute("focusable", "false");
+        const navPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        navPath.setAttribute("d", direction < 0 ? "m15 5-7 7 7 7" : "m9 5 7 7-7 7");
+        navPath.setAttribute("fill", "none");
+        navPath.setAttribute("stroke", "currentColor");
+        navPath.setAttribute("stroke-width", "1.8");
+        navPath.setAttribute("stroke-linecap", "round");
+        navPath.setAttribute("stroke-linejoin", "round");
+        navIcon.append(navPath);
+        button.append(navIcon);
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          cardIndex = (cardIndex + direction + imgs.length) % imgs.length;
+          image.src = imgs[cardIndex];
+          image.alt = memory.alt || memory.title || "时间线照片";
+          if (countBadge) countBadge.textContent = `${cardIndex + 1} / ${imgs.length}`;
+        });
+        return button;
+      };
+      media.append(createNav(-1, "上一张图片", "frame-nav-prev"));
+      media.append(createNav(1, "下一张图片", "frame-nav-next"));
+    }
+
+    article.append(media);
   }
 
   const copy = make("div", "memory-copy");  if (memory.title) {
@@ -763,6 +873,52 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
 
+dialogPrev.addEventListener("click", () => goToImage(dialogIndex - 1));
+dialogNext.addEventListener("click", () => goToImage(dialogIndex + 1));
+
+dialog.addEventListener("keydown", (event) => {
+  if (dialogImages.length <= 1) return;
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  event.preventDefault();
+  goToImage(dialogIndex + (event.key === "ArrowRight" ? 1 : -1));
+});
+
+dialogImageWrap.addEventListener("scroll", syncDialogIndex, { passive: true });
+
+dialogImageWrap.addEventListener("pointerdown", (event) => {
+  if (!dialogImageWrap.classList.contains("is-multi")) return;
+  if (event.pointerType !== "mouse" || event.button !== 0) return;
+  dialogDrag = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startLeft: dialogImageWrap.scrollLeft,
+  };
+  dialogImageWrap.classList.add("is-dragging");
+  dialogImageWrap.setPointerCapture(event.pointerId);
+  event.preventDefault();
+});
+
+dialogImageWrap.addEventListener("pointermove", (event) => {
+  if (!dialogDrag || event.pointerId !== dialogDrag.pointerId) return;
+  event.preventDefault();
+  dialogImageWrap.scrollLeft = dialogDrag.startLeft - (event.clientX - dialogDrag.startX);
+});
+
+function endDialogDrag(event) {
+  if (!dialogDrag || event.pointerId !== dialogDrag.pointerId) return;
+  const width = dialogImageWrap.clientWidth;
+  const target = width ? Math.round(dialogImageWrap.scrollLeft / width) : 0;
+  if (dialogImageWrap.hasPointerCapture(event.pointerId)) {
+    dialogImageWrap.releasePointerCapture(event.pointerId);
+  }
+  dialogDrag = null;
+  dialogImageWrap.classList.remove("is-dragging");
+  goToImage(target);
+}
+
+dialogImageWrap.addEventListener("pointerup", endDialogDrag);
+dialogImageWrap.addEventListener("pointercancel", endDialogDrag);
+
 // 关闭弹窗后不要让焦点落在整块时间线上（会出现浏览器默认的蓝色焦点框）
 let dialogTrigger = null;
 let pointerMode = false;
@@ -776,6 +932,14 @@ dialog.addEventListener("close", () => {
     if (active && active !== document.body) active.blur();
   }
   dialogTrigger = null;
+  dialogImages = [];
+  dialogIndex = 0;
+  dialogImageWrap.replaceChildren();
+  dialogImageWrap.classList.remove("is-multi", "is-dragging");
+  dialogMedia.classList.remove("is-multi");
+  dialogMedia.hidden = true;
+  dialogDots.replaceChildren();
+  dialogDrag = null;
 });
 
 searchInput.addEventListener("input", () => {
