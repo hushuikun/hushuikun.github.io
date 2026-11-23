@@ -313,12 +313,23 @@ figure {
   min-height: 0;
 }
 
-.memory-card.is-reversed .memory-frame {
+.memory-card.is-reversed .memory-media {
   order: 2;
 }
 
 .memory-card.is-reversed .memory-copy {
   order: 1;
+}
+
+.memory-media {
+  position: relative;
+  min-width: 0;
+  min-height: 300px;
+}
+
+.memory-media .memory-frame {
+  width: 100%;
+  height: 100%;
 }
 
 .memory-frame {
@@ -378,16 +389,75 @@ figure {
   letter-spacing: 0.04em;
 }
 
-.dialog-image-wrap.is-multi {
-  aspect-ratio: auto;
+.frame-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 31px;
+  height: 31px;
   display: grid;
-  gap: 3px;
-  background: transparent;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 50%;
+  background: rgb(24 42 43 / 55%);
+  color: #fff;
+  cursor: pointer;
+  transform: translateY(-50%);
+  backdrop-filter: blur(3px);
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.frame-nav:hover {
+  background: rgb(24 42 43 / 82%);
+}
+
+.frame-nav:focus-visible {
+  outline-color: #fff;
+}
+
+.frame-nav svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.frame-nav-prev {
+  left: 10px;
+}
+
+.frame-nav-next {
+  right: 10px;
+}
+
+.dialog-image-wrap.is-multi {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  background: #101716;
+  cursor: grab;
+  scrollbar-width: none;
+  user-select: none;
+}
+
+.dialog-image-wrap.is-multi::-webkit-scrollbar {
+  display: none;
+}
+
+.dialog-image-wrap.is-multi.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
 }
 
 .dialog-image-wrap.is-multi .dialog-image {
-  aspect-ratio: 16 / 9;
-  height: auto;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
 }
 
 .memory-copy {
@@ -522,6 +592,118 @@ figure {
   height: 100%;
   display: block;
   object-fit: cover;
+}
+
+.dialog-media {
+  position: relative;
+  background: #d5e4dc;
+}
+
+.dialog-media[hidden] {
+  display: none;
+}
+
+.dialog-media:not(.is-multi) .dialog-nav,
+.dialog-media:not(.is-multi) .dialog-counter,
+.dialog-media:not(.is-multi) .dialog-dots {
+  display: none;
+}
+
+.dialog-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 50%;
+  background: rgb(24 42 43 / 58%);
+  color: #fff;
+  cursor: pointer;
+  transform: translateY(-50%);
+  backdrop-filter: blur(4px);
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.dialog-nav:hover {
+  background: rgb(24 42 43 / 82%);
+}
+
+.dialog-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.dialog-nav:focus-visible {
+  outline-color: #fff;
+}
+
+.dialog-nav svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.dialog-nav-prev {
+  left: 12px;
+}
+
+.dialog-nav-next {
+  right: 12px;
+}
+
+.dialog-counter {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgb(24 42 43 / 66%);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  backdrop-filter: blur(4px);
+}
+
+.dialog-counter-sep {
+  opacity: 0.55;
+}
+
+.dialog-dots {
+  position: absolute;
+  right: 0;
+  bottom: 15px;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.dialog-dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 55%);
+  box-shadow: 0 0 0 1px rgb(12 30 31 / 25%);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.dialog-dot.is-active {
+  background: #fff;
+  transform: scale(1.25);
 }
 
 .dialog-details {
@@ -683,14 +865,31 @@ figure {
     grid-template-columns: 1fr;
   }
 
-  .memory-card.is-reversed .memory-frame,
+  .memory-card.is-reversed .memory-media,
   .memory-card.is-reversed .memory-copy {
     order: initial;
+  }
+
+  .memory-media {
+    min-height: 0;
   }
 
   .memory-frame {
     min-height: 0;
     aspect-ratio: 1.55 / 1;
+  }
+
+  .frame-nav {
+    width: 28px;
+    height: 28px;
+  }
+
+  .frame-nav-prev {
+    left: 8px;
+  }
+
+  .frame-nav-next {
+    right: 8px;
   }
 
   .memory-copy {
@@ -727,6 +926,28 @@ figure {
 
   .dialog-image-wrap {
     aspect-ratio: 4 / 3;
+  }
+
+  .dialog-nav {
+    width: 34px;
+    height: 34px;
+  }
+
+  .dialog-nav-prev {
+    left: 8px;
+  }
+
+  .dialog-nav-next {
+    right: 8px;
+  }
+
+  .dialog-counter {
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .dialog-dots {
+    bottom: 12px;
   }
 
   .dialog-details {

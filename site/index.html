@@ -127,7 +127,17 @@
 
     <dialog class="memory-dialog" id="memory-dialog" aria-labelledby="dialog-title">
       <button class="dialog-close" type="button" aria-label="关闭">×</button>
-      <div class="dialog-image-wrap"><img class="dialog-image" src="" alt=""></div>
+      <div class="dialog-media" id="dialog-media" hidden>
+        <div class="dialog-image-wrap"><img class="dialog-image" src="" alt=""></div>
+        <button class="dialog-nav dialog-nav-prev" type="button" aria-label="上一张">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+        <button class="dialog-nav dialog-nav-next" type="button" aria-label="下一张">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+        <p class="dialog-counter" aria-live="polite"><span id="dialog-current">1</span><span class="dialog-counter-sep">/</span><span id="dialog-total">1</span></p>
+        <div class="dialog-dots" id="dialog-dots" role="group" aria-label="图片切换"></div>
+      </div>
       <div class="dialog-details">
         <p class="dialog-date"></p>
         <h2 id="dialog-title"></h2>
