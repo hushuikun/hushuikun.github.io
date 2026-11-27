@@ -24,6 +24,13 @@ window.MEMORIES = [
     text: "晚上到家，女儿又哭又闹，我把她凶了一顿。",
   },
   {
+    date: "2026-11-26",
+    tags: ["生活", "家庭", "心情"],
+    image: "/assets/2026-11-26-pea-rice.webp",
+    alt: "一大碗老妈做的麦豆焖饭",
+    text: "晚上到家吃老妈做的麦豆（豌豆）焖饭，一大碗，真实一本满足！",
+  },
+  {
     date: "2026-11-12",
     tags: ["女儿", "生活", "心情"],
     image: "/assets/2026-11-12-happiness-tree.webp",

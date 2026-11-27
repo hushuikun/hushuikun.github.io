@@ -661,13 +661,14 @@ function renderStatsCards() {
   const totalChars = memories.reduce((sum, memory) => sum + textLength(memory), 0);
   const days = uniqueDays().size;
   const streak = streakInfo();
+  const photoCount = memories.reduce((sum, memory) => sum + memoryImages(memory).length, 0);
   const avg = days ? Math.round(totalChars / memories.length) : 0;
 
   const cards = [
     { value: String(memories.length), label: "条记录", note: `${days} 天有记录` },
     { value: totalChars.toLocaleString("zh-CN"), label: "总字数", note: `平均每条 ${avg} 字` },
     { value: `${streak.current}`, label: "当前连续", note: `最长 ${streak.longest} 天` },
-    { value: `${memories.filter((m) => m.image).length}`, label: "张照片", note: "时间线里的画面" },
+    { value: `${photoCount}`, label: "张照片", note: "时间线里的画面" },
   ];
 
   grid.replaceChildren();
