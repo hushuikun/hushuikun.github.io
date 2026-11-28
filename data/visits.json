@@ -1,13 +1,13 @@
 {
-  "updated": "2026-11-27T18:56:47Z",
+  "updated": "2026-11-28T01:57:57Z",
   "total": 77,
   "online": 0,
   "today": {
-    "hits": 7,
-    "visitors": 5
+    "hits": 0,
+    "visitors": 0
   },
   "yesterday": {
-    "hits": 1,
-    "visitors": 0
+    "hits": 7,
+    "visitors": 5
   }
 }
